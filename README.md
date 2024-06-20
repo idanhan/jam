@@ -1,10 +1,10 @@
-# budget_app
+# jamit_socialmediaapp
 
-A new Flutter project.
+A new Flutter project with flask as api mysql as database and aws server
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project lets user join jam sessions and collaborate with other musicians 
 
 A few resources to get you started if this is your first Flutter project:
 
