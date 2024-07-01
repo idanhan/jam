@@ -21,6 +21,7 @@ class Usermod(db.Model):
     instrument = Column(JSON,nullable=False)
     level = Column(String(30),nullable=False)
     genre = Column(JSON,nullable=False)
+    urls = Column(JSON)
     jams = relationship('jamMod',secondary='jams_users',back_populates= 'users',lazy="dynamic")
     friends = relationship('Usermod',secondary='friends',primaryjoin=id==FriendsMod.friend_a_id,secondaryjoin=id==FriendsMod.friend_b_id,lazy="dynamic",backref="friend_of")
     # friends = relationship('Usermod',secondary='friends',lazy="dynamic",backref="friend_of")

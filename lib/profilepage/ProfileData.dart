@@ -8,6 +8,7 @@ class ProfileData {
   List<String> instruments;
   String level;
   List<String> genres;
+  Map<String, String> urls;
 
   ProfileData({
     required this.name,
@@ -19,6 +20,7 @@ class ProfileData {
     required this.instruments,
     required this.level,
     required this.genres,
+    required this.urls,
   });
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,8 @@ class ProfileData {
       instruments: (json['instrument'] as List).cast<String>(),
       level: json['level'],
       genres: (json['genre'] as List).cast<String>(),
+      urls: (json['urls'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, '$value')),
     );
   }
 }

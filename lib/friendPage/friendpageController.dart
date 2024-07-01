@@ -8,10 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../ApiConstants.dart';
+import '../youtubeplayer.dart';
 
 class friendPagecontroller extends ChangeNotifier {
   late ProfileData data;
   Image? image;
+  bool initialized = true;
+  List<Widget> listwid = [];
 
   Future<void> getImage(String username) async {
     try {
@@ -31,6 +34,29 @@ class friendPagecontroller extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print(e);
+    }
+  }
+
+  void initialvidoes(Map<String, String> map, double height) {
+    if (initialized) {
+      listwid = map.entries
+          .map((e) => Container(
+                height: height * 0.3,
+                child: Column(
+                  children: [
+                    Text(
+                      e.key,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    YoutubeP(youtubeUrl: e.value)
+                  ],
+                ),
+              ))
+          .toList();
+      initialized = false;
     }
   }
 }

@@ -18,6 +18,7 @@ class plainUserSchema(Schema):
     instrument = fields.List(fields.Str(),required=True)
     level = fields.Str(required=True)
     genre = fields.List(fields.Str(),required=True)
+    urls = fields.Dict(keys=fields.Str(), values=fields.Str())
 
 
 class PlainJamSchema(Schema):

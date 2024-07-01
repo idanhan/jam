@@ -20,7 +20,7 @@ class FriendsMod(db.Model):
     status = Column(Enum(friendRequest),name='Status_enum',default=friendRequest.PENDING,nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now)
 
-    __table_args__ = (
-        PrimaryKeyConstraint('friend_a_id', 'friend_b_id'),
-        ForeignKeyConstraint([friend_a_id,friend_b_id],["users.id","users.id"])
-    )
+    # __table_args__ = (
+    #     PrimaryKeyConstraint('friend_a_id', 'friend_b_id'),
+    #     ForeignKeyConstraint([friend_a_id,friend_b_id],["users.id","users.id"]),
+    # )

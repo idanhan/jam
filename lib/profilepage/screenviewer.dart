@@ -1,5 +1,6 @@
 import 'package:budget_app/calander/calanderPage.dart';
 import 'package:budget_app/friends/friendsScreen.dart';
+import 'package:budget_app/maps/mapscreen.dart';
 import 'package:budget_app/models/User.dart';
 import 'package:budget_app/page/pageview.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
@@ -29,6 +30,7 @@ class screenPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("herrrr");
     List<Widget> list = [
       CalanderPage(
         email: email,
@@ -47,7 +49,8 @@ class screenPage extends StatelessWidget {
       ),
       RequestsScreen(
         username: username,
-      )
+      ),
+      MapScreen()
     ];
     return PageView.builder(itemBuilder: (context, index) {
       return Consumer<screenController>(

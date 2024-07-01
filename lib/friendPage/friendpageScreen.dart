@@ -14,14 +14,17 @@ class FriendProfilePage extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Consumer<friendPagecontroller>(
-          builder: (context, controller, child) => Container(
+            builder: (context, controller, child) {
+          controller.initialvidoes(frienddata.urls, height);
+          return Container(
             height: height,
             child: Column(
               children: [
                 SizedBox(
-                  height: height * 0.07,
+                  height: height * 0.01,
                 ),
                 Wrap(
                   children: [
@@ -100,12 +103,22 @@ class FriendProfilePage extends StatelessWidget {
                       height: height * 0.05,
                     ),
                     const Divider(),
+                    Container(
+                      height: height * 0.50,
+                      margin: EdgeInsets.all(height * 0.01),
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          return controller.listwid[index];
+                        },
+                        itemCount: controller.listwid.length,
+                      ),
+                    )
                   ],
                 )
               ],
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }

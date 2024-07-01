@@ -26,15 +26,19 @@ class RequestsController extends ChangeNotifier {
       friends = item.map((e) {
         getImages(e['username']);
         return ProfileData(
-            name: e['username'],
-            email: e['email'],
-            password: e['password'],
-            created_at: e['created_at'],
-            country: e['country'],
-            city: e['city'],
-            instruments: List<String>.from(e['instrument']),
-            level: e['level'],
-            genres: List<String>.from(e['genre']));
+          name: e['username'],
+          email: e['email'],
+          password: e['password'],
+          created_at: e['created_at'],
+          country: e['country'],
+          city: e['city'],
+          instruments: List<String>.from(e['instrument']),
+          level: e['level'],
+          genres: List<String>.from(
+            e['genre'],
+          ),
+          urls: Map<String, String>.from(e['urls']),
+        );
       }).toList();
       for (int i = 0; i < friends.length; i++) {
         print(friends[i].name);

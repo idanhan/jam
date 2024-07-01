@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 class FriendsForm extends StatelessWidget {
   final FriendController controller;
   final width;
-  FriendsForm({super.key, required this.controller, required this.width});
+  bool searched;
+  FriendsForm(
+      {super.key,
+      required this.controller,
+      required this.width,
+      required this.searched});
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +21,15 @@ class FriendsForm extends StatelessWidget {
           keyboardType: TextInputType.name,
           decoration: const InputDecoration(
             filled: true,
-            fillColor: Color.fromARGB(255, 248, 216, 248),
+            fillColor: Color.fromARGB(255, 245, 244, 245),
             hintText: 'Search friends',
             border: OutlineInputBorder(
                 borderRadius:
                     BorderRadius.horizontal(left: Radius.circular(20))),
           ),
+          onChanged: (String c) {
+            controller.searchedN(searched);
+          },
         ),
       ),
     );

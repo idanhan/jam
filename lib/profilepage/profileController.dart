@@ -10,11 +10,18 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../ApiConstants.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import '../youtubeplayer.dart';
 
 class ProfileController extends ChangeNotifier {
   late ProfileData data;
   XFile? file;
   CroppedFile? croppedFile;
+  final TextEditingController youtubeurlController = TextEditingController();
+  final TextEditingController Desccontroller = TextEditingController();
+  Map<String, YoutubeP> youtubemap = {};
+  List<Widget> listwid = [];
+  bool initialized = true;
 
   bool loading = false;
   Services services = Services();
@@ -22,7 +29,6 @@ class ProfileController extends ChangeNotifier {
   Future<ProfileData> getPostdata(
       BuildContext context, String name, String email) async {
     loading = true;
-    print("looookkk");
     data = await services.getData(context, name, email);
     loading = false;
 
@@ -71,6 +77,46 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       print('Error uploading image: $e');
+    }
+  }
+
+  Future<void> addplayer(
+      String url, String description, String username, double height) async {
+    // youtubemap.addAll({description: YoutubeP(youtubeUrl: url)});
+    print("now here");
+    final Map<String, String> map = {description: url};
+    listwid.add(map.entries
+        .map((e) => Container(
+              height: height * 0.3,
+              child: Column(
+                children: [Text(e.key), YoutubeP(youtubeUrl: e.value)],
+              ),
+            ))
+        .first);
+    print(listwid.length);
+    print("hhh");
+    notifyListeners();
+    var uri = Uri.parse("${constants.baseurl}/user/urlList/$username");
+    http.put(uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"url": url, "description": description}));
+  }
+
+  Future<void> addurlvideos(ProfileData user) async {
+    notifyListeners();
+  }
+
+  void initialvidoes(Map<String, String> map, double height) {
+    if (initialized) {
+      listwid = map.entries
+          .map((e) => Container(
+                height: height * 0.3,
+                child: Column(
+                  children: [Text(e.key), YoutubeP(youtubeUrl: e.value)],
+                ),
+              ))
+          .toList();
+      initialized = false;
     }
   }
 }

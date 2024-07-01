@@ -53,12 +53,10 @@ class SignInScreen extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        print('her');
                         await controller.getImage();
                         await controller.getListFriends(
                             controller.UsernameController.text); //added this
                         final user = controller.getUser(context);
-                        print("look here");
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.purple,

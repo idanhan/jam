@@ -40,7 +40,9 @@ class qualificationController extends ChangeNotifier with Usersignupmixin {
         'city': city,
         'instrument': instrument,
         'level': level,
-        'genre': genre
+        'genre': genre,
+        'urls': [],
+        'urldes': [],
       }),
     );
 
@@ -80,15 +82,18 @@ class qualificationController extends ChangeNotifier with Usersignupmixin {
       String level,
       List<String> genre) async {
     final user = ProfileData(
-        name: userName,
-        email: Email,
-        password: password,
-        created_at: created_at,
-        country: country,
-        city: city,
-        instruments: instrument,
-        level: level,
-        genres: genre);
+      name: userName,
+      email: Email,
+      password: password,
+      created_at: created_at,
+      country: country,
+      city: city,
+      instruments: instrument,
+      level: level,
+      genres: genre,
+      urls: {},
+    );
+    print(user.email);
     await Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) =>
             screenPage(email: Email, username: userName, user: user)));

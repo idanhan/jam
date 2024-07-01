@@ -25,29 +25,37 @@ class SignInController extends ChangeNotifier {
   List<ProfileData> friends = [];
 
   Future<List<ProfileData>> getListFriends(String username) async {
+    print("ppp");
     final url = Uri.parse("${constants.baseurl}/friends/friendsList/$username");
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> item = json.decode(response.body);
-      print("here");
-      print(item[0]['instrument']);
-      friends = item
-          .map((e) => ProfileData(
-              name: e['username'],
-              email: e['email'],
-              password: e['password'],
-              country: e['country'],
-              created_at: e['created_at'],
-              city: e['city'],
-              instruments: List<String>.from(e['instrument']),
-              genres: List<String>.from(e['genre']),
-              level: e['level']))
-          .toList();
-      for (int i = 0; i < friends.length; i++) {
-        getImages(friends[i].name);
+      print(item.length);
+      if (item.isNotEmpty) {
+        print("hereashhhhh");
+        print(item[0]['instrument']);
+        friends = item
+            .map((e) => ProfileData(
+                  name: e['username'],
+                  email: e['email'],
+                  password: e['password'],
+                  country: e['country'],
+                  created_at: e['created_at'],
+                  city: e['city'],
+                  instruments: List<String>.from(e['instrument']),
+                  genres: List<String>.from(e['genre']),
+                  level: e['level'],
+                  urls: (e['urls'] as Map<String, dynamic>)
+                      .map((key, value) => MapEntry(key, '$value')),
+                ))
+            .toList();
+        for (int i = 0; i < friends.length; i++) {
+          await getImages(friends[i].name);
+        }
+        print("this is the name");
+        print(friends[0].name);
+        notifyListeners();
       }
-      print("this is the name");
-      print(friends[0].name);
     }
 
     return friends;

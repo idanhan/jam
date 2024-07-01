@@ -15,6 +15,7 @@ class FriendController extends ChangeNotifier {
   Image? image;
   List<ProfileData> friends = [];
   Map<String, Image> mapfriends = {};
+  bool searched = false;
 
   Future<void> getUsers(String username) async {
     final url = Uri.parse("${constants.baseurl}/friends/search/$username");
@@ -33,6 +34,13 @@ class FriendController extends ChangeNotifier {
       print(response.body);
     } else if (response.statusCode == 500) {
       print(response.body);
+    }
+  }
+
+  void searchedN(bool bin) {
+    if (bin) {
+      searched = false;
+      notifyListeners();
     }
   }
 
@@ -97,18 +105,21 @@ class FriendController extends ChangeNotifier {
       print(item[0]['instrument']);
       friends = item
           .map((e) => ProfileData(
-              name: e['username'],
-              email: e['email'],
-              password: e['password'],
-              country: e['country'],
-              created_at: e['created_at'],
-              city: e['city'],
-              instruments: List<String>.from(e['instrument']),
-              genres: List<String>.from(e['genre']),
-              level: e['level']))
+                name: e['username'],
+                email: e['email'],
+                password: e['password'],
+                country: e['country'],
+                created_at: e['created_at'],
+                city: e['city'],
+                instruments: List<String>.from(e['instrument']),
+                genres: List<String>.from(e['genre']),
+                level: e['level'],
+                urls: Map<String, String>.from(e['urls']),
+              ))
           .toList();
       print("this is the name");
       print(friends[0].name);
+      notifyListeners();
     }
     return friends;
   }

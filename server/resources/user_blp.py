@@ -3,7 +3,8 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 from flask import request,Response
-from sqlalchemy import DateTime, and_, insert
+from sqlalchemy import DateTime, and_, insert, or_
+from sqlalchemy.orm.attributes import flag_modified
 import datetime
 from flask import jsonify
 from db import db
@@ -47,7 +48,7 @@ class user(MethodView):
             "instrument":data['instrument'],
             "level":data["level"],
             "genre":data["genre"],
-            
+            "urls":{},
         }
         user = Usermod(**item_data)
         db.session.add(user)
@@ -224,8 +225,8 @@ class getListFriends(MethodView):
             return abort(404,"user not found")
         user_id = user.id
         accepted_requests = FriendsMod.query.filter(
-            ((FriendsMod.friend_a_id == user_id) or (FriendsMod.friend_b_id == user_id)) and
-            (FriendsMod.status == friendRequest.ACCEPTED)
+           and_(or_(FriendsMod.friend_a_id == user_id,FriendsMod.friend_b_id == user_id),
+            (FriendsMod.status == friendRequest.ACCEPTED))
         ).all()
         friend_ids = set()
         for request in accepted_requests:
@@ -234,8 +235,32 @@ class getListFriends(MethodView):
             if request.friend_b_id != user_id:
                 friend_ids.add(request.friend_b_id)
         friends = Usermod.query.filter(Usermod.id.in_(friend_ids)).all()
-        friend_list = [{"username":friend.username,"email":friend.email,"password":friend.password,"created_at":friend.created_at,"country":friend.country,"city":friend.city,"instrument":friend.instrument,"genre":friend.genre,"level":friend.level} for friend in friends]
+        friend_list = [{"username":friend.username,"email":friend.email,"password":friend.password,"created_at":friend.created_at,"country":friend.country,"city":friend.city,"instrument":friend.instrument,"genre":friend.genre,"level":friend.level,"urls":friend.urls} for friend in friends]
         return friend_list
+
+@blp.route("/user/urlList/<string:name>",methods = ["PUT"])
+class posturllist(MethodView):
+    @blp.response(200,userSchema)
+    def put(self,name):
+        data = request.get_json()
+        url = data["url"]
+        description = data["description"]
+        if not url or not description:
+            return jsonify({"error": "URL and description are required"}), 400
+        user = Usermod.query.filter_by(username = name).first()
+        if not user:
+            return jsonify({"error":"user or friend not found"}),404
+        if not user.urls:
+            user.urls = {}
+
+        user.urls[description] = url
+        flag_modified(user, "urls") 
+        db.session.commit()
+        return jsonify({"message":"url and urldescription added successfully"}),200
+        
+    
+
+
 
     
 
