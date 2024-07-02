@@ -18,7 +18,7 @@ class FriendProfilePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Consumer<friendPagecontroller>(
             builder: (context, controller, child) {
-          controller.initialvidoes(frienddata.urls, height);
+          controller.initialvidoes(frienddata.urls, height, frienddata.name);
           return Container(
             height: height,
             child: Column(

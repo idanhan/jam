@@ -25,8 +25,6 @@ class TaskWidget extends StatelessWidget {
         ),
       );
     }
-    print("shit");
-    print(selectedEvents.length);
     return SfCalendarTheme(
       data: const SfCalendarThemeData(
           timeTextStyle: TextStyle(color: Colors.black, fontSize: 16)),

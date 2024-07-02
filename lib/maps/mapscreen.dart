@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -55,24 +57,30 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: _initialposition == null
           ? Center(child: CircularProgressIndicator())
-          : Container(
-              height: height,
-              child: Center(
-                child: GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: _initialposition!,
-                    zoom: 14,
-                  ),
-                  onMapCreated: (GoogleMapController controller) {
-                    print("created");
-                    setState(() {
-                      _mapController = controller;
-                    });
-                  },
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                ),
+          : GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _initialposition!,
+                zoom: 14,
               ),
+              onMapCreated: (GoogleMapController controller) {
+                print("created");
+                setState(() {
+                  _mapController = controller;
+                });
+              },
+              cameraTargetBounds: CameraTargetBounds.unbounded,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              zoomControlsEnabled: true,
+              scrollGesturesEnabled: true,
+              zoomGesturesEnabled: true,
+              rotateGesturesEnabled: true,
+              tiltGesturesEnabled: true,
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                new Factory<OneSequenceGestureRecognizer>(
+                  () => new EagerGestureRecognizer(),
+                ),
+              ].toSet(),
             ),
     );
   }

@@ -1,12 +1,8 @@
-import 'package:budget_app/friends/friendModel.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 import 'package:budget_app/profilepage/ProfileData.dart';
-import 'package:budget_app/profilepage/service.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
+
 import '../ApiConstants.dart';
 import '../youtubeplayer.dart';
 
@@ -37,7 +33,7 @@ class friendPagecontroller extends ChangeNotifier {
     }
   }
 
-  void initialvidoes(Map<String, String> map, double height) {
+  void initialvidoes(Map<String, String> map, double height, String username) {
     if (initialized) {
       listwid = map.entries
           .map((e) => Container(
@@ -56,7 +52,6 @@ class friendPagecontroller extends ChangeNotifier {
                 ),
               ))
           .toList();
-      initialized = false;
     }
   }
 }

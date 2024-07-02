@@ -1,19 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:budget_app/calander/calanderPage.dart';
-import 'package:budget_app/mainscreen/mainscreenview.dart';
 import 'package:budget_app/profilepage/screenviewer.dart';
-import 'package:budget_app/qualificationpage/qualificationController.dart';
-import 'package:budget_app/qualificationpage/qualificationview.dart';
-import 'package:budget_app/signin/Signinpage.dart';
+
 import 'package:budget_app/signup/signUpScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../ApiConstants.dart';
 import '../profilepage/service.dart';
 import '../profilepage/ProfileData.dart';
-import 'package:http/http.dart' as http;
 
 class SignInController extends ChangeNotifier {
   TextEditingController UsernameController = TextEditingController();
