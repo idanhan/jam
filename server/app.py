@@ -10,7 +10,7 @@ from resources.user_blp import blp as userblueprint
 import models
 
 
-name = 'mysql+pymysql://admin:Ihporcu13684@road-db.cfumyciqcaqf.eu-north-1.rds.amazonaws.com:3306/roadsdb'
+name = 'mysql+pymysql://'+os.getenv("regionurl")
 
 
 

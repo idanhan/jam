@@ -20,7 +20,7 @@ class CalanderPage extends StatelessWidget {
   CalanderPage(
       {super.key, this.current, this.email, this.username, this.userdata});
 
-  CalendarView viewCalendar = CalendarView.month;
+  CalendarView viewCalendar = CalendarView.week;
 
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
@@ -30,86 +30,93 @@ class CalanderPage extends StatelessWidget {
     print("here is reubuilt");
     final events = Provider.of<EventProvider>(context).evetns;
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return ColorfulSafeArea(
       color: Colors.white.withOpacity(0.7),
-      child: Consumer<CalanderController>(
-        builder: (context, calanderController, child) =>
-            // Scaffold(
-            //   bottomNavigationBar: NavigationBar(
-            //     selectedIndex: current!,
-            //     onDestinationSelected: (value) {
-            //       switch (value) {
-            //         case 1:
-            //           Navigator.of(context).push(MaterialPageRoute(
-            //             builder: (context) => ProfileScreen(
-            //               username: username ?? '',
-            //               email: email ?? '',
-            //               current: value,
-            //             ),
-            //           ));
-            //       }
-            //     },
-            //     destinations: const [
-            //       NavigationDestination(
-            //         icon: Icon(Icons.schedule),
-            //         label: "schedule",
-            //       ),
-            //       NavigationDestination(
-            //           icon: Icon(Icons.person), label: "MyProfile"),
-            //       NavigationDestination(icon: Icon(Icons.people), label: "friends"),
-            //       NavigationDestination(
-            //           icon: Icon(Icons.settings), label: "settings")
-            //     ],
-            //   ),
-            //   // drawer: GestureDetector(
-            //   //   onTap: () {
-            //   //     FocusScope.of(context).unfocus();
-            //   //   },
-            //   //   child: calDrawer(
-            //   //     width: width,
-            //   //   ),
-            //   // ),
-            //   appBar: AppBar(
-            //     key: _key,
-            //     actions: [],
-            //     centerTitle: true,
-            //     title: const Text(
-            //       "scheduele",
-            //       textAlign: TextAlign.right,
-            //     ),
-            //     backgroundColor: Colors.white,
-            //   ),
-            //   body:
-            Stack(children: [
-          SfCalendar(
-            onLongPress: (calendarLongPressDetails) {
-              final provider =
-                  Provider.of<EventProvider>(context, listen: false);
-              provider.setDate(calendarLongPressDetails.date!);
-              showModalBottomSheet(
-                  context: context, builder: (context) => TaskWidget());
-            },
-            view: viewCalendar,
-            dataSource: EventDataSource(events),
-            cellBorderColor: const Color.fromARGB(221, 82, 81, 81),
-            monthViewSettings: const MonthViewSettings(
-                appointmentDisplayMode: MonthAppointmentDisplayMode.indicator),
-          ),
-          Positioned(
-            right: 20,
-            bottom: 50,
-            child: ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.lightBlueAccent)),
-                onPressed: () {
-                  calanderController.gotoApointmetPage(context);
-                },
-                child: const Icon(
-                  Icons.add,
-                )),
-          )
-        ]),
+      child: Container(
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        height: height * 0.5,
+        width: width,
+        child: Consumer<CalanderController>(
+          builder: (context, calanderController, child) =>
+              // Scaffold(
+              //   bottomNavigationBar: NavigationBar(
+              //     selectedIndex: current!,
+              //     onDestinationSelected: (value) {
+              //       switch (value) {
+              //         case 1:
+              //           Navigator.of(context).push(MaterialPageRoute(
+              //             builder: (context) => ProfileScreen(
+              //               username: username ?? '',
+              //               email: email ?? '',
+              //               current: value,
+              //             ),
+              //           ));
+              //       }
+              //     },
+              //     destinations: const [
+              //       NavigationDestination(
+              //         icon: Icon(Icons.schedule),
+              //         label: "schedule",
+              //       ),
+              //       NavigationDestination(
+              //           icon: Icon(Icons.person), label: "MyProfile"),
+              //       NavigationDestination(icon: Icon(Icons.people), label: "friends"),
+              //       NavigationDestination(
+              //           icon: Icon(Icons.settings), label: "settings")
+              //     ],
+              //   ),
+              //   // drawer: GestureDetector(
+              //   //   onTap: () {
+              //   //     FocusScope.of(context).unfocus();
+              //   //   },
+              //   //   child: calDrawer(
+              //   //     width: width,
+              //   //   ),
+              //   // ),
+              //   appBar: AppBar(
+              //     key: _key,
+              //     actions: [],
+              //     centerTitle: true,
+              //     title: const Text(
+              //       "scheduele",
+              //       textAlign: TextAlign.right,
+              //     ),
+              //     backgroundColor: Colors.white,
+              //   ),
+              //   body:
+              Stack(children: [
+            SfCalendar(
+              onLongPress: (calendarLongPressDetails) {
+                final provider =
+                    Provider.of<EventProvider>(context, listen: false);
+                provider.setDate(calendarLongPressDetails.date!);
+                showModalBottomSheet(
+                    context: context, builder: (context) => TaskWidget());
+              },
+              view: viewCalendar,
+              dataSource: EventDataSource(events),
+              cellBorderColor: const Color.fromARGB(221, 82, 81, 81),
+              monthViewSettings: const MonthViewSettings(
+                  appointmentDisplayMode:
+                      MonthAppointmentDisplayMode.indicator),
+            ),
+            Positioned(
+              right: 20,
+              bottom: 50,
+              child: ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.lightBlueAccent)),
+                  onPressed: () {
+                    calanderController.gotoApointmetPage(context);
+                  },
+                  child: const Icon(
+                    Icons.add,
+                  )),
+            )
+          ]),
+        ),
       ),
     );
     // );

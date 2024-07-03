@@ -36,7 +36,6 @@ class _MapScreenState extends State<MapScreen> {
       }
       if (locationResult == PermissionStatus.granted) {
         LocationData currentLocation = await _location.getLocation();
-        print("location");
         setState(() {
           _initialposition =
               LatLng(currentLocation.latitude!, currentLocation.longitude!);

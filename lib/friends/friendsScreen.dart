@@ -101,21 +101,30 @@ class FriendsScreen extends StatelessWidget {
                           controller.gotofriendpage(
                               context, image, controller.friend!);
                         },
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Image(
-                              image: controller.image != null
-                                  ? controller.image!.image
-                                  : Image.asset("assets/person.jpg").image,
+                        child: Container(
+                          height: height * 0.12,
+                          child: Card(
+                            elevation: 5,
+                            child: Center(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  child: Image(
+                                    image: controller.image != null
+                                        ? controller.image!.image
+                                        : Image.asset("assets/person.jpg")
+                                            .image,
+                                  ),
+                                ),
+                                title: Text(controller.friend!.name),
+                                trailing: ElevatedButton(
+                                  onPressed: () {
+                                    controller.addFriend(
+                                        username, controller.friend!.name);
+                                  },
+                                  child: const Text("Add Friend"),
+                                ),
+                              ),
                             ),
-                          ),
-                          title: Text(controller.friend!.name),
-                          trailing: ElevatedButton(
-                            onPressed: () {
-                              controller.addFriend(
-                                  username, controller.friend!.name);
-                            },
-                            child: const Text("Add Friend"),
                           ),
                         ),
                       )
@@ -126,7 +135,9 @@ class FriendsScreen extends StatelessWidget {
                                 onTap: () {
                                   final image = (friendsimages != null &&
                                           friendsimages!.isNotEmpty &&
-                                          friendsimages![index] != null)
+                                          friendsimages![
+                                                  friendslist![index].name] !=
+                                              null)
                                       ? friendsimages![
                                           friendslist![index].name]!
                                       : Image.asset("assets/person.jpg");
@@ -134,26 +145,38 @@ class FriendsScreen extends StatelessWidget {
                                       context, image, friendslist![index]);
                                 },
                                 child: Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: (friendsimages != null &&
-                                              friendsimages!.isNotEmpty &&
-                                              friendsimages![friendslist![index]
-                                                      .name] !=
-                                                  null)
-                                          ? friendsimages![
-                                                  friendslist![index].name]!
-                                              .image
-                                          : Image.asset(
-                                              "assets/person.jpg",
-                                            ).image,
+                                  height: height * 0.13,
+                                  child: Card(
+                                    margin: EdgeInsets.all(10),
+                                    elevation: 5,
+                                    child: Center(
+                                      child: ListTile(
+                                        leading: FittedBox(
+                                          fit: BoxFit.cover,
+                                          child: CircleAvatar(
+                                            radius: 40,
+                                            backgroundImage: (friendsimages !=
+                                                        null &&
+                                                    friendsimages!.isNotEmpty &&
+                                                    friendsimages![
+                                                            friendslist![index]
+                                                                .name] !=
+                                                        null)
+                                                ? friendsimages![
+                                                        friendslist![index]
+                                                            .name]!
+                                                    .image
+                                                : Image.asset(
+                                                    "assets/person.jpg",
+                                                  ).image,
+                                          ),
+                                        ),
+                                        title: Text(friendslist![index].name),
+                                        trailing: ElevatedButton(
+                                            onPressed: () {},
+                                            child: const Text("Remove")),
+                                      ),
                                     ),
-                                    title: Text(friendslist![index].name),
-                                    trailing: ElevatedButton(
-                                        onPressed: () {},
-                                        child: const Text("Remove")),
                                   ),
                                 ),
                               );
