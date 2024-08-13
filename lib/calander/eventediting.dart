@@ -13,7 +13,10 @@ import '../utils/utils.dart';
 class EventEditingpage extends StatefulWidget {
   final Event event;
 
-  EventEditingpage({super.key, required this.event});
+  EventEditingpage({
+    super.key,
+    required this.event,
+  });
 
   @override
   State<EventEditingpage> createState() => _EventEditingpageState();
@@ -214,6 +217,8 @@ class _EventEditingpageState extends State<EventEditingpage> {
     bool? newisAllDay,
   }) {
     final newevent = Event(
+        location: widget.event.location,
+        friendimage: widget.event.friendimage,
         from: newfrom ?? oldevent.from,
         to: newto ?? oldevent.to,
         title: newTitle ?? oldevent.title,

@@ -2,23 +2,34 @@ import 'package:budget_app/friendPage/friendpageController.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../chatscreen/chatservice.dart';
 
 class FriendProfilePage extends StatelessWidget {
+  String userEmail;
+  String currentusername;
   Image friendImage;
   ProfileData frienddata;
   FriendProfilePage(
-      {super.key, required this.friendImage, required this.frienddata});
+      {super.key,
+      required this.userEmail,
+      required this.friendImage,
+      required this.frienddata,
+      required this.currentusername});
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: SingleChildScrollView(
         child: Consumer<friendPagecontroller>(
             builder: (context, controller, child) {
-          controller.initialvidoes(frienddata.urls, height, frienddata.name);
+          controller.initialvidoes(
+              frienddata.urls, height, frienddata.name, width);
           return Container(
             height: height,
             child: Column(
@@ -47,6 +58,23 @@ class FriendProfilePage extends StatelessWidget {
                           frienddata.name,
                           style: const TextStyle(fontSize: 30),
                         ),
+                        SizedBox(
+                          width: width * 0.2,
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              controller.gotochatroom(
+                                  context,
+                                  currentusername,
+                                  frienddata.name,
+                                  width,
+                                  frienddata.email,
+                                  userEmail);
+                            },
+                            icon: const Icon(
+                              Icons.chat,
+                              size: 40,
+                            ))
                       ],
                     ),
                     SizedBox(

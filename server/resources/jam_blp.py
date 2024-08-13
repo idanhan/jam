@@ -13,17 +13,12 @@ from models.jam import jamMod
 from models.jam_users import jamsUsersMod
 
 
-blp = Blueprint("jam_Mod",__name__,description="operation on user")
-@blp.route("/jam/<string:jamname>",methods = ['GET'])
-class user(MethodView):
-    @blp.response(200,userSchema)
-    def get(self,jamname):
-        jam = jamMod.query.filter(jamMod.jamTitle == jamname).first()
-        return jam
+blp2 = Blueprint("jam_Mod",__name__,description="operation on jams")
 
-@blp.route("/jam",methods = ['Post'])
+
+@blp2.route("/jam",methods = ['POST'])
 class jamPost(MethodView):
-    @blp.response(200,userSchema)
+    @blp2.response(200,tasksSchema)
     def post(self):
         data = request.get_json()
         item_data = {
@@ -31,6 +26,11 @@ class jamPost(MethodView):
             "jamDescription": data["jamDescription"],
             "jamStartTime": data["jamStartTime"],
             "jamEndTime": data["jamEndTime"],
+            "locationdes": data["locationdes"],
+            "public":data["public"],
+            "friends":data["friends"],
+            "user_created":data["user_created"],
+            "created_at":data["created_at"],
         }
         jam = jamMod(**item_data)
         db.session.add(jam)
@@ -42,3 +42,10 @@ class jamPost(MethodView):
             db.session.rollback()
             abort(500,message = "An error has occured1")
         return jam 
+    
+@blp2.route("/getjams",methods = ['GET'])
+class jamsGet(MethodView):
+    @blp2.response(200)
+    def get(self):
+        jams = jamMod.query.all()
+        return [{"jamTitle":jam.jamTitle,"jamDescription":jam.jamDescription,"jamStartTime":jam.jamStartTime,"jamEndTime":jam.jamEndTime,"locationdes":jam.locationdes,"public":jam.public,"friends":jam.friends,"user_created":jam.user_created,"created_at":jam.created_at}for jam in jams]

@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:budget_app/calander/event.dart';
+import 'package:budget_app/maps/locationmodel.dart';
+import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -6,21 +10,41 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import './EventProvider.dart';
 import './newevent.dart';
+import './friendaddsearchform.dart';
+import './namedcircleavatar.dart';
+import './locationform.dart';
+import '../ApiConstants.dart';
+import 'package:http/http.dart' as http;
 
 class CalanderController extends ChangeNotifier {
   TextEditingController eventname1 = TextEditingController();
   TextEditingController eventnameEdit = TextEditingController();
   TextEditingController descriptionEdit = TextEditingController();
   TextEditingController description = TextEditingController();
+  TextEditingController locationdesc = TextEditingController();
   late DateTime toDate;
   late TimeOfDay toTime;
   late DateTime fromDate;
   late TimeOfDay fromTime;
   final formKey = GlobalKey<FormState>();
   final formKeyEdit = GlobalKey<FormState>();
+  final locationformkey = GlobalKey<LoactionFormState>();
+  bool public = true;
+  TextEditingController friendsearch = TextEditingController();
+  final searchformkey = GlobalKey<FriendSearchFormState>();
+  int initialindex = 0;
+  Map<String, Image> addedFriends = {};
+  List<Widget> widgetlistavatar = [];
   bool ischecked;
+  bool added = false;
+  List<Namedavatar> listnamedavatar = [];
+  List<MapEvent>? eventsformap;
+  List<MapEvent>? mapeventsload;
+  bool first = false;
+
   CalanderController(
       {DateTime? toDate,
+      this.eventsformap,
       DateTime? fromDate,
       TimeOfDay? toTime,
       TimeOfDay? fromTime,
@@ -35,9 +59,101 @@ class CalanderController extends ChangeNotifier {
         eventname1 = TextEditingController(text: title ?? ""),
         description = TextEditingController(text: descriptionin ?? "");
 
-  Future<void> gotoApointmetPage(BuildContext context) async {
-    await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => NewEvent()));
+  void changepublic(int index) {
+    public = !public;
+    initialindex = public ? 0 : 1;
+    notifyListeners();
+  }
+
+  Future<void> gotoApointmetPage(
+      BuildContext context,
+      List<ProfileData>? frienddata,
+      Map<String, Image>? friendimage,
+      String username,
+      Image? userimage,
+      String useremail) async {
+    await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => NewEvent(
+              useremail: useremail,
+              events: eventsformap,
+              location: locationdesc.text,
+              frienddata: frienddata,
+              friendimage: friendimage,
+              username: username,
+              userimage: userimage,
+            )));
+  }
+
+  void maptolist(Map<String, Image>? friendsimage, String name,
+      List<ProfileData>? frienddata) {
+    if ((friendsimage != null) &&
+        (friendsimage.containsKey(name)) &&
+        (!addedFriends.containsKey(name))) {
+      addedFriends.addAll(friendsimage);
+      listnamedavatar.add(Namedavatar(
+          name: name,
+          image: friendsimage[name] ?? Image.asset("assets/person.jpg")));
+      notifyListeners();
+    } else if (frienddata != null &&
+        frienddata.isNotEmpty &&
+        !addedFriends.containsKey(name)) {
+      if (frienddata.where((element) => element.name == name).isNotEmpty) {
+        addedFriends.addAll({name: Image.asset("assets/person.jpg")});
+        listnamedavatar.add(
+            Namedavatar(name: name, image: Image.asset("assets/person.jpg")));
+        notifyListeners();
+      }
+    }
+  }
+
+  void removeFriend(int index) {
+    addedFriends
+        .removeWhere((key, value) => key == listnamedavatar[index].name);
+    listnamedavatar.removeAt(index);
+    notifyListeners();
+  }
+
+  Future<void> addfriendtojam(
+      Map<String, Image>? friendsimages, String friendname) async {
+    if (friendsimages != null && friendsimages.isNotEmpty) {
+      if (friendsimages.containsKey(friendname) &&
+          !addedFriends.containsKey(friendname)) {
+        addedFriends.addAll({friendname: friendsimages[friendname]!});
+      }
+    }
+  }
+
+  Future<void> getallevents(
+      context, List<MapEvent> mapevents, Map<String, Image> friendsmap) async {
+    List<Event> eventslist = mapevents
+        .map((e) => Event(
+            friendimage: friendsmap,
+            location: e.location,
+            from: DateTime.parse(e.from),
+            to: DateTime.parse(e.to),
+            title: e.eventtitle,
+            description: e.description))
+        .toList();
+    eventslist.forEach((element) {
+      Provider.of<EventProvider>(context).addEvent(element);
+    });
+  }
+
+  void getallevents2(List<Event> events, List<MapEvent>? mapevents) {
+    if (first && events.isNotEmpty) {
+      List<MapEvent> secmapevents = events
+          .map((e) => MapEvent(
+              friendsimage: e.friendimage!.keys.toList(),
+              from: e.from.toString(),
+              location: e.location,
+              to: e.to.toString(),
+              description: e.description,
+              eventtitle: e.title))
+          .toList();
+
+      mapevents!.addAll(secmapevents);
+      first = false;
+    }
   }
 
   Future<DateTime?> pickDayTime(
@@ -195,8 +311,20 @@ class CalanderController extends ChangeNotifier {
     Navigator.popUntil(context, ModalRoute.withName('/CalanderPage'));
   }
 
-  void saveForm(BuildContext context) {
+  void saveForm(
+      BuildContext context, String location, Map<String, Image> friendimage) {
+    if (eventsformap != null) {
+      eventsformap!.add(MapEvent(
+          location: location,
+          from: fromDate.toString(),
+          to: toDate.toString(),
+          eventtitle: eventname1.text,
+          description: description.text,
+          friendsimage: friendimage.entries.map((e) => e.key).toList()));
+    }
     final event = Event(
+        location: location,
+        friendimage: friendimage,
         from: fromDate,
         to: toDate,
         title: eventname1.text,
@@ -206,13 +334,53 @@ class CalanderController extends ChangeNotifier {
     fromDate = DateTime.now();
     toDate = DateTime.now();
     final provider = Provider.of<EventProvider>(context, listen: false);
-    print(provider.evetns.length);
     provider.addEvent(event);
     Navigator.of(context).popUntil(ModalRoute.withName('/CalanderPage'));
   }
 
+  Future<void> loadmapeventstoscheduele(BuildContext context,
+      List<Event>? eventlist, Map<String, Image>? friendsimage) async {
+    final provider = Provider.of<EventProvider>(context, listen: false);
+    if (eventlist != null && eventlist.isNotEmpty) {
+      eventlist.forEach((element) {
+        provider.addEvent(Event(
+            location: element.location,
+            from: element.from,
+            to: element.to,
+            title: element.title,
+            description: element.description,
+            friendimage: element.friendimage ?? {}));
+      });
+      eventlist.clear();
+    }
+  }
+
   void checkboxfun(bool val) {
     ischecked = val;
+    notifyListeners();
+  }
+
+  Future<void> postjam(MapEvent mapEvent, String useremail) async {
+    final url = Uri.parse("${constants.baseurl}/jam");
+    final response = await http.post(url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "jamTitle": mapEvent.eventtitle,
+          "jamDescription": mapEvent.description,
+          "jamStartTime": mapEvent.from.toString(),
+          "jamEndTime": mapEvent.to.toString(),
+          "locationdes": mapEvent.location,
+          "public": public,
+          "friends": mapEvent.friendsimage,
+          "user_created": useremail,
+          "created_at": DateTime.now().toString(),
+        }));
+    if (response.statusCode == 400) {
+      print(response.body);
+    }
+    if (response.statusCode == 500) {
+      print(response.body);
+    }
     notifyListeners();
   }
 

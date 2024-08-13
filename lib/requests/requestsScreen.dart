@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import '../friends/friendController.dart';
 
 class RequestsScreen extends StatelessWidget {
   String username;
@@ -11,8 +12,8 @@ class RequestsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: Consumer<RequestsController>(
         builder: (context, controller, child) => Column(
           children: [
@@ -29,7 +30,7 @@ class RequestsScreen extends StatelessWidget {
             ),
             const Divider(),
             SingleChildScrollView(
-              child: Container(
+              child: SizedBox(
                 height: height * 0.5,
                 child: FutureBuilder(
                     future: controller.getRequests(username),
@@ -48,27 +49,33 @@ class RequestsScreen extends StatelessWidget {
                               SizedBox(
                                 height: height * 0.05,
                               ),
-                              ListTile(
-                                title: Text(snapshot.data![index].name),
-                                leading: CircleAvatar(
-                                  child: controller
-                                      .images[snapshot.data![index].name],
-                                ),
-                                trailing: Wrap(children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      controller.removeRequest(
-                                          username, snapshot.data![index].name);
-                                    },
-                                    child: const Text("Remove"),
+                              Card(
+                                margin: const EdgeInsets.all(10),
+                                elevation: 5,
+                                child: ListTile(
+                                  title: Text(snapshot.data![index].name),
+                                  leading: CircleAvatar(
+                                    child: controller
+                                        .images[snapshot.data![index].name],
                                   ),
-                                  ElevatedButton(
-                                      onPressed: () async {
-                                        await controller.acceptrequest(username,
+                                  trailing: Wrap(children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        controller.removeRequest(username,
                                             snapshot.data![index].name);
                                       },
-                                      child: const Text("Add Friend"))
-                                ]),
+                                      child: const Text("Remove"),
+                                    ),
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          await controller.acceptrequest(
+                                              username,
+                                              snapshot.data![index].name,
+                                              context);
+                                        },
+                                        child: const Text("Add Friend"))
+                                  ]),
+                                ),
                               )
                             ],
                           ),

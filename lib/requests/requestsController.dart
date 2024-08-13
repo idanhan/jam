@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:budget_app/friends/friendController.dart';
 import 'package:budget_app/models/User.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:budget_app/utils/usermod.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../ApiConstants.dart';
 
 class RequestsController extends ChangeNotifier {
@@ -13,13 +15,13 @@ class RequestsController extends ChangeNotifier {
   Map<String, Image> images = {};
   Image? image;
   int i = 0;
+  List<ProfileData> addedfriends = [];
 
   Future<List<ProfileData>> getRequests(String username) async {
     final url =
         Uri.parse("${constants.baseurl}/friends/friendsRequsets/$username");
     final response = await http.get(url);
     print(response.statusCode);
-
     if (response.statusCode == 200) {
       final List<dynamic> item = json.decode(response.body);
       print(item[0]);
@@ -91,7 +93,8 @@ class RequestsController extends ChangeNotifier {
     }
   }
 
-  Future<void> acceptrequest(String username, String friendname) async {
+  Future<void> acceptrequest(
+      String username, String friendname, BuildContext context) async {
     try {
       final url = Uri.parse('${constants.baseurl}/friends/put/$username');
       final response = await http.put(url,
@@ -100,9 +103,11 @@ class RequestsController extends ChangeNotifier {
             'friendname': friendname,
           }));
       if (response.statusCode == 200) {
-        friends.removeWhere((element) => element.name == friendname);
         print(response.body);
         print("fuck oofff");
+        addedfriends
+            .add(friends.where((element) => element.name == friendname).first);
+        friends.removeWhere((element) => element.name == friendname);
         notifyListeners();
       }
     } catch (e) {

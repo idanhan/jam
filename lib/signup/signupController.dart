@@ -62,6 +62,9 @@ class SignupController extends ChangeNotifier with Usersignupmixin {
                   password: passwordController.text,
                 ),
             settings: const RouteSettings(name: '/CalanderPage')));
+    emailController.clear();
+    usernameController.clear();
+    passwordController.clear();
   }
 
   Future<void> userGet(int userId) async {

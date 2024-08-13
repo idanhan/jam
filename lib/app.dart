@@ -1,14 +1,14 @@
 import 'package:budget_app/calander/EventProvider.dart';
+import 'package:budget_app/chatscreen/chatservice.dart';
 import 'package:budget_app/friendPage/friendpageController.dart';
-import 'package:budget_app/friendPage/friendpageScreen.dart';
 import 'package:budget_app/friends/friendController.dart';
+import 'package:budget_app/maps/listMapevents.dart';
 import 'package:budget_app/page/pageview.dart';
 import 'package:budget_app/page/pageviewcontroller.dart';
 import 'package:budget_app/profilepage/profileController.dart';
 import 'package:budget_app/profilepage/screenController.dart';
 import 'package:budget_app/profilepage/service.dart';
 import 'package:budget_app/qualificationpage/dropdownbuttons/cityChange.dart';
-import 'package:budget_app/qualificationpage/dropdownbuttons/cityForm.dart';
 import 'package:budget_app/qualificationpage/dropdownbuttons/levelChange.dart';
 import 'package:budget_app/qualificationpage/dropdownbuttons/musicalInstruList.dart';
 import 'package:budget_app/qualificationpage/genreDrop.dart';
@@ -19,7 +19,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './qualificationpage/qualificationController.dart';
 import './calander/calanderController.dart';
-import './profilepage/profileController.dart';
+import './qualificationpage/authservices.dart';
+import './chatscreen/chatcontroller.dart';
+import './chatscreen/chathistorycontroller.dart';
 
 class Myapp extends StatelessWidget {
   const Myapp({super.key});
@@ -43,17 +45,26 @@ class Myapp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => Services()),
         ChangeNotifierProvider(create: (context) => FriendController()),
         ChangeNotifierProvider(create: (context) => RequestsController()),
-        ChangeNotifierProvider(create: (context) => friendPagecontroller())
+        ChangeNotifierProvider(create: (context) => friendPagecontroller()),
+        ChangeNotifierProvider(create: (context) => ListMapEvents()),
+        ChangeNotifierProvider(create: (context) => AuthServices()),
+        ChangeNotifierProvider(create: (context) => Chatcontroller()),
+        ChangeNotifierProvider(create: (context) => ChatHistoryController()),
+        ChangeNotifierProvider(create: (context) => ChatService())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          primaryColor: const Color.fromRGBO(244, 243, 243, 1),
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 2, 86, 124)),
+              seedColor: const Color.fromRGBO(244, 243, 243, 1)),
           useMaterial3: true,
+          cardTheme: const CardTheme(
+              color: Color.fromARGB(255, 182, 218, 226),
+              clipBehavior: Clip.antiAliasWithSaveLayer),
         ),
-        home: Pageview(),
+        home: const Pageview(),
       ),
     );
   }

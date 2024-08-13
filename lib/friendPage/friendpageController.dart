@@ -1,10 +1,14 @@
+import 'package:budget_app/chatscreen/chatscreen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:budget_app/profilepage/ProfileData.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 import '../ApiConstants.dart';
 import '../youtubeplayer.dart';
+
+import '../chatscreen/chatservice.dart';
 
 class friendPagecontroller extends ChangeNotifier {
   late ProfileData data;
@@ -33,7 +37,8 @@ class friendPagecontroller extends ChangeNotifier {
     }
   }
 
-  void initialvidoes(Map<String, String> map, double height, String username) {
+  void initialvidoes(
+      Map<String, String> map, double height, String username, double width) {
     if (initialized) {
       listwid = map.entries
           .map((e) => Container(
@@ -47,11 +52,36 @@ class friendPagecontroller extends ChangeNotifier {
                     SizedBox(
                       height: height * 0.01,
                     ),
-                    YoutubeP(youtubeUrl: e.value)
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: YoutubeP(
+                        youtubeUrl: e.value,
+                        width: width,
+                      ),
+                    )
                   ],
                 ),
               ))
           .toList();
     }
+  }
+
+  Future<void> gotochatroom(
+      BuildContext context,
+      String username,
+      String otherusername,
+      double width,
+      String receiverEmail,
+      String userEmail) async {
+    await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ChatScreen(
+              userEmail: userEmail,
+              username: username,
+              otherusername: otherusername,
+              width: width,
+              receiverEmail: receiverEmail,
+            )));
   }
 }

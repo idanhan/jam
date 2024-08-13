@@ -16,6 +16,7 @@ class FriendController extends ChangeNotifier {
   List<ProfileData> friends = [];
   Map<String, Image> mapfriends = {};
   bool searched = false;
+  bool addedfriend = false;
 
   Future<void> getUsers(String username) async {
     final url = Uri.parse("${constants.baseurl}/friends/search/$username");
@@ -40,8 +41,12 @@ class FriendController extends ChangeNotifier {
   void searchedN(bool bin) {
     if (bin) {
       searched = false;
-      notifyListeners();
     }
+  }
+
+  void orderlist(List<ProfileData> friendlist) {
+    friendlist
+        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
 
   Future<void> addFriend(String username, String friendname) async {
@@ -52,6 +57,8 @@ class FriendController extends ChangeNotifier {
     if (response.statusCode == 200) {
       print("request sent");
     }
+    addedfriend = true;
+    notifyListeners();
   }
 
   Future<void> getImage() async {
@@ -101,8 +108,6 @@ class FriendController extends ChangeNotifier {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> item = json.decode(response.body);
-      print("here");
-      print(item[0]['instrument']);
       friends = item
           .map((e) => ProfileData(
                 name: e['username'],
@@ -117,19 +122,20 @@ class FriendController extends ChangeNotifier {
                 urls: Map<String, String>.from(e['urls']),
               ))
           .toList();
-      print("this is the name");
-      print(friends[0].name);
+
       notifyListeners();
     }
     return friends;
   }
 
-  Future<void> gotofriendpage(
-      BuildContext context, Image image, ProfileData frienddata) async {
+  Future<void> gotofriendpage(BuildContext context, Image image,
+      ProfileData frienddata, String currentusername, String userEmail) async {
     await Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => FriendProfilePage(
+              userEmail: userEmail,
               friendImage: image,
               frienddata: frienddata,
+              currentusername: currentusername,
             )));
   }
 }

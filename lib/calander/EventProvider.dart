@@ -21,8 +21,7 @@ class EventProvider extends ChangeNotifier {
       .toList();
   void addEvent(Event event) {
     _events.add(event);
-    print(_events.first);
-    notifyListeners();
+    // notifyListeners(); see if needed
   }
 
   void editEvent(Event oldEvent, Event newEvent, BuildContext context) {

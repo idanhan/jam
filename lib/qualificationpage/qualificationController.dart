@@ -4,13 +4,18 @@ import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:budget_app/profilepage/screenviewer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../ApiConstants.dart';
 import '../utils/signupmixin.dart';
 import '../calander/calanderPage.dart';
 import './dropdownbuttons/insDropItem.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import './authservices.dart';
 
 class qualificationController extends ChangeNotifier with Usersignupmixin {
   List<instrumentDropItem> instlist = [];
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> register(
       String userName,
@@ -60,15 +65,38 @@ class qualificationController extends ChangeNotifier with Usersignupmixin {
     var uri = Uri.parse("${constants.baseurl}/user");
   }
 
-  Future<void> gotoCalander(
-      BuildContext context, String email, String username) async {
-    await Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => CalanderPage(
-              username: username,
-              email: email,
-            ),
-        settings: const RouteSettings(name: '/CalanderPage')));
+  void signup(BuildContext context, String Email, String Password) async {
+    final authservices = Provider.of<AuthServices>(context, listen: false);
+
+    try {
+      await authservices.signUpWithEmailAndPassword(Email, Password);
+      print("signup");
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
+
+  Future<void> signin(
+      BuildContext context, String Email, String Password) async {
+    final authservices = Provider.of<AuthServices>(context, listen: false);
+    try {
+      await authservices.signInWithEmailPassword(Email, Password);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  // Future<void> gotoCalander(
+  //     BuildContext context, String email, String username) async {
+  //   await Navigator.of(context).pushReplacement(MaterialPageRoute(
+  //       builder: (context) => CalanderPage(
+  //             username: username,
+  //             email: email,
+  //           ),
+  //       settings: const RouteSettings(name: '/CalanderPage')));
+  // }
 
   Future<void> gotoScreenview(
       BuildContext context,
@@ -93,9 +121,16 @@ class qualificationController extends ChangeNotifier with Usersignupmixin {
       genres: genre,
       urls: {},
     );
+    _firestore.collection('users').doc(userName).set({
+      'username': userName,
+      'email': Email,
+    });
     print(user.email);
     await Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) =>
-            screenPage(email: Email, username: userName, user: user)));
+        builder: (context) => screenPage(
+              email: Email,
+              username: userName,
+              user: user,
+            )));
   }
 }

@@ -15,81 +15,89 @@ class SignUpScreen extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Consumer<SignupController>(
-          builder: (context, controller, widget) {
-            return SingleChildScrollView(
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: width * 0.1),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: height * 0.1,
-                    ),
-                    const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          fontSize: 40,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const Text(
-                      'Create your account',
-                      style: TextStyle(
-                        color: Colors.white,
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Color.fromARGB(255, 0, 0, 0), Colors.grey],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter),
+          ),
+          child: Consumer<SignupController>(
+            builder: (context, controller, widget) {
+              return SingleChildScrollView(
+                child: Container(
+                  height: height,
+                  margin: EdgeInsets.symmetric(horizontal: width * 0.1),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: height * 0.1,
                       ),
-                    ),
-                    SizedBox(
-                      height: height * 0.1,
-                    ),
-                    SignupForm(
-                      controller: controller,
-                      width: width,
-                    ),
-                    SizedBox(
-                      height: height * 0.07,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.gotoQualificationpage(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
-                          minimumSize: Size(width * 0.8, height * 0.08),
-                          shape: const StadiumBorder()),
-                      child: const Text(
+                      const Text(
                         'Sign Up',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            fontSize: 40,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    SizedBox(
-                      height: height * 0.08,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Already have an account? click',
+                      const Text(
+                        'Create your account',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        height: height * 0.1,
+                      ),
+                      SignupForm(
+                        controller: controller,
+                        width: width,
+                      ),
+                      SizedBox(
+                        height: height * 0.07,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.gotoQualificationpage(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 84, 120, 187),
+                            minimumSize: Size(width * 0.8, height * 0.08),
+                            shape: const StadiumBorder()),
+                        child: const Text(
+                          'Sign Up',
                           style: TextStyle(color: Colors.white),
                         ),
-                        TextButton(
-                            style: TextButton.styleFrom(
-                                tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap),
-                            onPressed: () {
-                              controller.gotoSignInScreen(context);
-                            },
-                            child: Text(
-                              'here',
-                              style: TextStyle(color: Colors.purple),
-                            ))
-                      ],
-                    )
-                  ],
+                      ),
+                      SizedBox(
+                        height: height * 0.08,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Already have an account? click',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          TextButton(
+                              style: TextButton.styleFrom(
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap),
+                              onPressed: () {
+                                controller.gotoSignInScreen(context);
+                              },
+                              child: Text(
+                                'here',
+                                style: TextStyle(color: Colors.purple),
+                              ))
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

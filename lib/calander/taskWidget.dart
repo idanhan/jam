@@ -7,15 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
+import '../maps/locationmodel.dart';
 
 class TaskWidget extends StatelessWidget {
-  const TaskWidget({super.key});
+  List<MapEvent>? mapEvents;
+  TaskWidget({super.key, this.mapEvents});
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<EventProvider>(context);
     final selectedEvents = provider.eventsOfSelectedDate;
     final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     if (selectedEvents.isEmpty) {
       return const Center(
@@ -42,8 +45,11 @@ class TaskWidget extends StatelessWidget {
           onTap: (details) {
             if (details.appointments == null) return;
             final event = details.appointments!.first as Event;
+            print("task widget");
+            print(event.friendimage);
             Navigator.of(context).push(MaterialPageRoute(
               builder: ((context) => EventViewPage(
+                    width: width,
                     height: height,
                     event: event,
                   )),

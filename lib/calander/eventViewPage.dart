@@ -10,10 +10,22 @@ import 'package:provider/provider.dart';
 class EventViewPage extends StatelessWidget {
   final Event event;
   final double height;
-  const EventViewPage({super.key, required this.event, required this.height});
+  final double width;
+  List<Widget> listnamedavatar = [];
+  bool happend = false;
+
+  EventViewPage(
+      {super.key,
+      required this.event,
+      required this.height,
+      required this.width});
 
   @override
   Widget build(BuildContext context) {
+    print(event.friendimage);
+    if (event.friendimage != null && event.friendimage!.isNotEmpty) {
+      maptolistwidget(height);
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -59,14 +71,49 @@ class EventViewPage extends StatelessWidget {
           SizedBox(
             height: height * 0.01,
           ),
+          Wrap(
+            children: [
+              SizedBox(
+                width: width * 0.04,
+              ),
+              const Text(
+                "Location:",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: width * 0.01,
+              ),
+              Text(event.location,
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
+            ],
+          ),
+          SizedBox(
+            height: height * 0.01,
+          ),
           ListTile(
             leading: const Text(
               "Description:",
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-            trailing: Text("${event.description}",
+            trailing: Text(event.description,
                 style: const TextStyle(color: Colors.white, fontSize: 16)),
           ),
+          event.friendimage != null
+              ? SizedBox(
+                  height: height * 0.3,
+                  width: width * 0.9,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return listnamedavatar[index];
+                    },
+                    itemCount: listnamedavatar.length,
+                  ),
+                )
+              : const SizedBox(),
         ],
       ),
     );
@@ -137,5 +184,21 @@ class EventViewPage extends StatelessWidget {
           },
           child: Text("Cancel"))
     ];
+  }
+
+  void maptolistwidget(double height) {
+    if (!happend) {
+      happend = !happend;
+      listnamedavatar = event.friendimage!.entries
+          .map((e) => Container(
+                margin: const EdgeInsets.only(right: 4),
+                child: CircleAvatar(
+                  radius: height * 0.05,
+                  backgroundImage: e.value.image,
+                  child: Text(e.key),
+                ),
+              ))
+          .toList();
+    }
   }
 }

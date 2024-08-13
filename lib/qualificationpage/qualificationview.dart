@@ -233,9 +233,9 @@ class qualificationView extends StatelessWidget {
                       final String level = context.read<ChangeLevel>().current;
                       final List<String> genres =
                           context.read<GenresList>().getGenreList;
+                      controller.signup(context, email, password);
                       print("here country");
                       print(country);
-
                       await controller.register(
                           username,
                           email,

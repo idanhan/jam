@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -15,8 +14,6 @@ class Services with ChangeNotifier {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final item = json.decode(response.body);
-        print('here');
-        print(item);
         user = ProfileData.fromJson(item);
       }
     } catch (e) {

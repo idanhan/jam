@@ -1,12 +1,39 @@
+import 'dart:ui';
+
+import 'package:budget_app/calander/friendaddsearchform.dart';
+import 'package:budget_app/calander/namedcircleavatar.dart';
+import 'package:budget_app/maps/locationmodel.dart';
+import 'package:budget_app/profilepage/ProfileData.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import './event.dart';
 import './calanderController.dart';
 import '../utils/utils.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+import './locationform.dart';
+import '../maps/listMapevents.dart';
 
 class NewEvent extends StatelessWidget {
-  NewEvent({super.key});
+  String username;
+  Image? userimage;
+  String useremail;
+  List<ProfileData>? frienddata;
+  Map<String, Image>? friendimage;
+  String location;
+  MapEvent? mapEvent;
+  List<MapEvent>? events;
+  NewEvent(
+      {super.key,
+      required this.username,
+      this.userimage,
+      required this.location,
+      this.mapEvent,
+      this.frienddata,
+      this.friendimage,
+      this.events,
+      required this.useremail});
   final date = DateTime.now();
 
   @override
@@ -17,19 +44,21 @@ class NewEvent extends StatelessWidget {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Consumer<CalanderController>(
-        builder: (context, controller, child) => Scaffold(
+      child: Consumer2<CalanderController, ListMapEvents>(
+        builder: (context, calandercontroller, listmapcontroller, child) =>
+            Scaffold(
           backgroundColor: Colors.black,
           appBar: AppBar(
             backgroundColor: const Color.fromARGB(255, 201, 114, 216),
             leading: CloseButton(
               color: Colors.white,
               onPressed: () {
-                controller.fromDate = DateTime.now();
-                controller.toDate = DateTime.now();
-                controller.fromTime = TimeOfDay.now();
-                controller.toTime = TimeOfDay.now();
-                controller.dispose();
+                calandercontroller.fromDate = DateTime.now();
+                calandercontroller.toDate = DateTime.now();
+                calandercontroller.fromTime = TimeOfDay.now();
+                calandercontroller.toTime = TimeOfDay.now();
+                calandercontroller.addedFriends.clear();
+                calandercontroller.listnamedavatar.clear();
                 Navigator.pop(context);
               },
             ),
@@ -40,7 +69,33 @@ class NewEvent extends StatelessWidget {
                     elevation: 0,
                     backgroundColor: const Color.fromARGB(255, 201, 114, 216)),
                 onPressed: () {
-                  controller.saveForm(context);
+                  if (!calandercontroller.public) {
+                    calandercontroller.addedFriends.addAll({
+                      username: userimage ?? Image.asset("assets/person.jpg")
+                    });
+                  }
+                  listmapcontroller.addtolist(MapEvent(
+                      friendsimage:
+                          calandercontroller.addedFriends.keys.toList(),
+                      from: calandercontroller.fromDate.toString(),
+                      location: calandercontroller.locationdesc.text,
+                      to: calandercontroller.toDate.toString(),
+                      description: calandercontroller.description.text,
+                      eventtitle: calandercontroller.eventname1.text));
+                  calandercontroller.postjam(
+                      MapEvent(
+                          friendsimage:
+                              calandercontroller.addedFriends.keys.toList(),
+                          from: calandercontroller.fromDate.toString(),
+                          location: calandercontroller.locationdesc.text,
+                          to: calandercontroller.toDate.toString(),
+                          description: calandercontroller.description.text,
+                          eventtitle: calandercontroller.eventname1.text),
+                      useremail);
+                  calandercontroller.saveForm(
+                      context,
+                      calandercontroller.locationdesc.text,
+                      calandercontroller.addedFriends);
                 },
                 label: const Text(
                   "save",
@@ -62,13 +117,13 @@ class NewEvent extends StatelessWidget {
                   height: 20,
                 ),
                 Form(
-                  key: controller.formKey,
+                  key: calandercontroller.formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: TextFormField(
                     validator: (value) => value != null && value.isEmpty
                         ? "title cannot be empty"
                         : null,
-                    controller: controller.eventname1,
+                    controller: calandercontroller.eventname1,
                     style: const TextStyle(fontSize: 24, color: Colors.white),
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
@@ -81,11 +136,11 @@ class NewEvent extends StatelessWidget {
                 const SizedBox(
                   height: 50,
                 ),
-                controller.buildFrom(
-                    textDate: Utils.toDateDay(controller.fromDate),
-                    textTime: Utils.toDateTime(controller.fromDate),
+                calandercontroller.buildFrom(
+                    textDate: Utils.toDateDay(calandercontroller.fromDate),
+                    textTime: Utils.toDateTime(calandercontroller.fromDate),
                     Datefunction: () {
-                      controller.pickfromdaytime(
+                      calandercontroller.pickfromdaytime(
                           initialtime: DateTime.now(),
                           fromEdit: DateTime.now(),
                           toEdit: DateTime.now(),
@@ -98,7 +153,7 @@ class NewEvent extends StatelessWidget {
                           context: context);
                     },
                     Timefunction: () {
-                      controller.pickfromdaytime(
+                      calandercontroller.pickfromdaytime(
                           initialtime: DateTime.now(),
                           fromEdit: DateTime.now(),
                           toEdit: DateTime.now(),
@@ -115,11 +170,11 @@ class NewEvent extends StatelessWidget {
                 SizedBox(
                   height: height * 0.01,
                 ),
-                controller.buildFrom(
-                    textDate: Utils.toDateDay(controller.toDate),
-                    textTime: Utils.toDateTime(controller.toDate),
+                calandercontroller.buildFrom(
+                    textDate: Utils.toDateDay(calandercontroller.toDate),
+                    textTime: Utils.toDateTime(calandercontroller.toDate),
                     Datefunction: () {
-                      controller.pickfromdaytime(
+                      calandercontroller.pickfromdaytime(
                           initialtime: DateTime.now(),
                           fromEdit: DateTime.now(),
                           toEdit: DateTime.now(),
@@ -132,7 +187,7 @@ class NewEvent extends StatelessWidget {
                           context: context);
                     },
                     Timefunction: () {
-                      controller.pickfromdaytime(
+                      calandercontroller.pickfromdaytime(
                           initialtime: DateTime.now(),
                           fromEdit: DateTime.now(),
                           toEdit: DateTime.now(),
@@ -149,23 +204,77 @@ class NewEvent extends StatelessWidget {
                 SizedBox(
                   height: height * 0.01,
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Checkbox(
-                      value: controller.ischecked,
-                      onChanged: (bool? val) {
-                        controller.checkboxfun(val ?? false);
-                      }),
-                  SizedBox(
-                    width: width * 0.01,
-                  ),
-                  const Text(
-                    "is all day?",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  SizedBox(
-                    height: height * 0.02,
-                  ),
-                ]),
+                ToggleSwitch(
+                  minWidth: 90,
+                  initialLabelIndex: calandercontroller.initialindex,
+                  cornerRadius: 20,
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  totalSwitches: 2,
+                  labels: ['Public', 'Private'],
+                  icons: [Icons.public, Icons.private_connectivity],
+                  activeBgColor: [Colors.blue, Colors.green],
+                  onToggle: (index) {
+                    calandercontroller.changepublic(index!);
+                  },
+                ),
+                SizedBox(
+                  height: height * 0.05,
+                ),
+                !calandercontroller.public
+                    ? Column(
+                        children: [
+                          Row(children: [
+                            FriendSearchForm(
+                              friendcontroller: calandercontroller.friendsearch,
+                              width: width,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  calandercontroller.maptolist(
+                                      friendimage,
+                                      calandercontroller.friendsearch.text,
+                                      frienddata);
+                                },
+                                child: Text("add friend")),
+                          ]),
+                          SizedBox(
+                            height: height * 0.02,
+                          ),
+                          SizedBox(
+                            height: height * 0.2,
+                            width: width * 0.9,
+                            child: ListView.builder(
+                              itemBuilder: (context, index) {
+                                return Stack(
+                                  children: [
+                                    calandercontroller.listnamedavatar[index],
+                                    IconButton(
+                                      onPressed: () {
+                                        calandercontroller.removeFriend(index);
+                                      },
+                                      icon: Icon(Icons.remove),
+                                    )
+                                  ],
+                                );
+                              },
+                              itemCount:
+                                  calandercontroller.listnamedavatar.length,
+                              scrollDirection: Axis.horizontal,
+                            ),
+                          )
+                        ],
+                      )
+                    : SizedBox(),
+                SizedBox(
+                  height: height * 0.03,
+                ),
+                LoactionForm(
+                    slocation: calandercontroller.locationdesc,
+                    height: height,
+                    width: width,
+                    locationkey: calandercontroller.locationformkey),
                 SizedBox(
                   height: height * 0.05,
                 ),
@@ -178,10 +287,10 @@ class NewEvent extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                     ),
-                    controller: controller.description,
+                    controller: calandercontroller.description,
                     decoration: const InputDecoration(
                         border: InputBorder.none,
-                        hintText: "   Add a description",
+                        hintText: " Add a description",
                         hintStyle: TextStyle(color: Colors.white)),
                   ),
                 ),
@@ -191,48 +300,5 @@ class NewEvent extends StatelessWidget {
         ),
       ),
     );
-
-    // Widget buildDropDownField(
-    //     {required String text, required VoidCallback function}) {
-    //   return Expanded(
-    //     child: ListTile(
-    //       title: Row(children: [
-    //         Text(
-    //           text,
-    //           style: const TextStyle(color: Colors.white),
-    //         ),
-    //       ]),
-    //       trailing: const Icon(Icons.arrow_drop_down),
-    //       onTap: function,
-    //     ),
-    //   );
-    // }
-
-    // Widget buildFrom(
-    //         {required String textDate,
-    //         required String textTime,
-    //         required VoidCallback Datefunction,
-    //         required VoidCallback Timefunction,
-    //         required double width,
-    //         required String fromTo}) =>
-    //     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    //       Text(
-    //         fromTo,
-    //         style: TextStyle(color: Colors.white),
-    //         textAlign: TextAlign.start,
-    //       ),
-    //       Row(
-    //         children: [
-    //           buildDropDownField(text: textDate, function: Datefunction),
-    //           Container(
-    //               width: width * 0.3,
-    //               child: Row(
-    //                 children: [
-    //                   buildDropDownField(text: textTime, function: Timefunction)
-    //                 ],
-    //               )),
-    //         ],
-    //       ),
-    //     ]);
   }
 }

@@ -26,4 +26,9 @@ class EventDataSource extends CalendarDataSource {
 
   @override
   Color getColor(int index) => getEvent(index).backcolor ?? Colors.orange;
+
+  String getlocation(int index) => getEvent(index).location;
+
+  Map<String, Image> getfriendsImage(int index) =>
+      getEvent(index).friendimage ?? {};
 }

@@ -1,17 +1,16 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:budget_app/models/User.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:budget_app/profilepage/service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../ApiConstants.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../youtubeplayer.dart';
+import '../qualificationpage/authservices.dart';
 
 class ProfileController extends ChangeNotifier {
   late ProfileData data;
@@ -22,6 +21,11 @@ class ProfileController extends ChangeNotifier {
   Map<String, YoutubeP> youtubemap = {};
   List<Widget> listwid = [];
   bool initialized = true;
+  Image? imageProvidernew;
+
+  Future<void> signout() async {
+    return await FirebaseAuth.instance.signOut();
+  }
 
   bool loading = false;
   Services services = Services();
@@ -33,6 +37,11 @@ class ProfileController extends ChangeNotifier {
     loading = false;
 
     return data;
+  }
+
+  void changeimageprovider(Image? newimage) {
+    imageProvidernew = newimage;
+    notifyListeners();
   }
 
   Future<void> pickimage() async {
@@ -49,7 +58,7 @@ class ProfileController extends ChangeNotifier {
       final cropped = await ImageCropper().cropImage(sourcePath: file!.path);
       if (cropped != null) {
         croppedFile = cropped;
-        notifyListeners();
+        changeimageprovider(Image.file(File(croppedFile!.path)));
       }
     } else {}
   }
@@ -75,26 +84,31 @@ class ProfileController extends ChangeNotifier {
       } else {
         print('Failed to upload image');
       }
+      notifyListeners();
     } catch (e) {
       print('Error uploading image: $e');
     }
   }
 
-  Future<void> addplayer(
-      String url, String description, String username, double height) async {
+  Future<void> addplayer(String url, String description, String username,
+      double height, double width) async {
     // youtubemap.addAll({description: YoutubeP(youtubeUrl: url)});
-    print("now here");
     final Map<String, String> map = {description: url};
     listwid.add(map.entries
-        .map((e) => Container(
+        .map((e) => SizedBox(
               height: height * 0.3,
+              width: width * 0.9,
               child: Column(
-                children: [Text(e.key), YoutubeP(youtubeUrl: e.value)],
+                children: [
+                  Text(e.key),
+                  YoutubeP(
+                    youtubeUrl: e.value,
+                    width: width,
+                  )
+                ],
               ),
             ))
         .first);
-    print(listwid.length);
-    print("hhh");
     notifyListeners();
     var uri = Uri.parse("${constants.baseurl}/user/urlList/$username");
     http.put(uri,
@@ -106,13 +120,20 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initialvidoes(Map<String, String> map, double height) {
+  void initialvidoes(Map<String, String> map, double height, double width) {
     if (initialized) {
       listwid = map.entries
-          .map((e) => Container(
+          .map((e) => SizedBox(
                 height: height * 0.3,
+                width: width * 0.9,
                 child: Column(
-                  children: [Text(e.key), YoutubeP(youtubeUrl: e.value)],
+                  children: [
+                    Text(e.key),
+                    YoutubeP(
+                      youtubeUrl: e.value,
+                      width: width,
+                    )
+                  ],
                 ),
               ))
           .toList();

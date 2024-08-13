@@ -100,14 +100,14 @@ class userImagePost(MethodView):
         
 @blp.route("/user/image/<string:username>",methods = ['GET'])
 class userImageGet(MethodView):
-    @blp.response(200,userSchema)
+    @blp.response(200)
     def get(self,username):
         imagename = f'image{username}'
         Object_Key = imagename
         try:
             response = s3_client.get_object(Bucket = S3_BUCKET,Key = Object_Key)
             image_content = response['Body'].read()
-            return Response(image_content, mimetype='image/jpg')
+            return Response(image_content, mimetype='image/jpeg')
         
         except s3_client.exceptions.NoSuchKey:
             return jsonify({"error": "Image not found"}), 404

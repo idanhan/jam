@@ -27,6 +27,10 @@ class PlainJamSchema(Schema):
     jamDescription = fields.Str(required=False)
     jamStart = fields.Str(required=True)
     jamEnd = fields.Str(required=True)
+    locationdes = fields.Str(required=True)
+    public = fields.Bool(required = True)
+    friends = fields.List(fields.Str(required= False))
+    user_created = fields.Str(required=True)
     created_at = fields.Str(required = True)
 
 class PlainFriendsSchema(Schema):

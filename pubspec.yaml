@@ -51,6 +51,11 @@ dependencies:
   google_maps_flutter: ^2.2.8
   location: ^6.0.2
   geocoding: ^3.0.0
+  toggle_switch: ^2.3.0
+  cloud_firestore: ^5.1.0
+  firebase_core: ^3.2.0
+  firebase_auth: ^5.1.2
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:
@@ -89,6 +94,8 @@ flutter:
     - assets/icons/trumpet.png
     - assets/icons/violin.png
     - assets/person.jpg
+    - assets/live-music.png
+    - assets/band.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

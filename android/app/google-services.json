@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "786425541095",
+    "project_id": "bandgroup-cf097",
+    "storage_bucket": "bandgroup-cf097.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786425541095:android:0280c585f05817a9100d42",
+        "android_client_info": {
+          "package_name": "com.example.budget_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAodzGsfaMAsECrJw_2owVHWQ5DlGLS-NY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
