@@ -1,6 +1,6 @@
 # jamit_socialmediaapp
 
-A new Flutter project with flask as api mysql as database and aws server
+A new Flutter project with flask as api mysql as database and aws ec2 as server using docker and firebase for real time chat.
 
 ## Getting Started
 
