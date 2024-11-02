@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import './chatcontroller.dart';
 
 class ChatScreen extends StatelessWidget {
-  String username;
-  String otherusername;
-  String receiverEmail;
-  String userEmail;
-  double width;
-  ChatScreen(
+  final String username;
+  final String otherusername;
+  final String receiverEmail;
+  final String userEmail;
+  final double width;
+  const ChatScreen(
       {super.key,
       required this.otherusername,
       required this.username,

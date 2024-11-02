@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 class FriendsForm extends StatelessWidget {
   final FriendController controller;
   final width;
-  bool searched;
-  FriendsForm(
+  final bool searched;
+  const FriendsForm(
       {super.key,
       required this.controller,
       required this.width,

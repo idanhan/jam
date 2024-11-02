@@ -1,22 +1,24 @@
+import 'dart:convert';
+
 import 'package:budget_app/calander/event.dart';
-import 'package:budget_app/calander/newevent.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import './calanderController.dart';
 import './EventProvider.dart';
 import '../utils/utils.dart';
+import 'package:http/http.dart' as http;
+import '../ApiConstants.dart';
 
 class EventEditingpage extends StatefulWidget {
   final Event event;
+  final username;
+  final emailname;
 
-  EventEditingpage({
-    super.key,
-    required this.event,
-  });
+  EventEditingpage(
+      {super.key,
+      required this.event,
+      required this.username,
+      required this.emailname});
 
   @override
   State<EventEditingpage> createState() => _EventEditingpageState();
@@ -56,7 +58,7 @@ class _EventEditingpageState extends State<EventEditingpage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 201, 114, 216),
+          backgroundColor: const Color.fromARGB(255, 121, 121, 221),
           actions: buildViewActions(
             context,
             widget.event,
@@ -64,6 +66,7 @@ class _EventEditingpageState extends State<EventEditingpage> {
             newDesription: description,
             newfrom: from,
             newto: to,
+            useremail: widget.emailname,
           )),
       body: Consumer<CalanderController>(
         builder: (context, controller, child) => SingleChildScrollView(
@@ -81,12 +84,14 @@ class _EventEditingpageState extends State<EventEditingpage> {
                       ? "title cannot be empty"
                       : null,
                   onChanged: (text) {
-                    print("editingcomplete");
+                    controller.tortl(text);
+                    controller.aligntext();
                     setState(() {
                       title = text;
                     });
                   },
                   controller: titleController,
+                  textAlign: controller.align,
                   style: const TextStyle(fontSize: 24, color: Colors.white),
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -189,11 +194,14 @@ class _EventEditingpageState extends State<EventEditingpage> {
                     color: Colors.white,
                   ),
                   onChanged: (value) {
+                    controller.tortl(value);
+                    controller.aligntext();
                     setState(() {
                       description = value;
                     });
                   },
                   controller: descController,
+                  textAlign: controller.align,
                   decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: "   Add a description",
@@ -207,6 +215,26 @@ class _EventEditingpageState extends State<EventEditingpage> {
     );
   }
 
+  Future<void> putjam(
+      Event mapEvent2, String useremail, String created_at, bool public) async {
+    final url = Uri.parse("${constants.baseurl}/changejams");
+    final response = await http.put(url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "jamTitle": mapEvent2.title,
+          "jamDescription": mapEvent2.description,
+          "jamStartTime": mapEvent2.from.toString(),
+          "jamEndTime": mapEvent2.to.toString(),
+          "locationdes": mapEvent2.location,
+          "public": public,
+          "friends": mapEvent2.friendimage != null
+              ? mapEvent2.friendimage!.keys.toList()
+              : [],
+          "user_created": mapEvent2.user_created,
+          "created_at": created_at,
+        }));
+  }
+
   List<Widget> buildViewActions(
     BuildContext context,
     Event oldevent, {
@@ -215,13 +243,16 @@ class _EventEditingpageState extends State<EventEditingpage> {
     DateTime? newfrom,
     DateTime? newto,
     bool? newisAllDay,
+    required String useremail,
   }) {
     final newevent = Event(
+        user_created: widget.event.user_created,
         location: widget.event.location,
         friendimage: widget.event.friendimage,
         from: newfrom ?? oldevent.from,
         to: newto ?? oldevent.to,
         title: newTitle ?? oldevent.title,
+        created_at: DateTime.now().toIso8601String(),
         description: newDesription ?? oldevent.description);
     return [
       const Icon(
@@ -232,8 +263,6 @@ class _EventEditingpageState extends State<EventEditingpage> {
           onPressed: () {
             final eventProvider =
                 Provider.of<EventProvider>(context, listen: false);
-            print("pre");
-            print(newevent.title);
             showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -257,6 +286,8 @@ class _EventEditingpageState extends State<EventEditingpage> {
                             onPressed: () {
                               eventProvider.editEvent(
                                   oldevent, newevent, context);
+                              putjam(newevent, useremail,
+                                  widget.event.created_at, true);
                             },
                             child: Text("Edit"))
                       ],

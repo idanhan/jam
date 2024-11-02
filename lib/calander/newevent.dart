@@ -1,14 +1,8 @@
-import 'dart:ui';
-
 import 'package:budget_app/calander/friendaddsearchform.dart';
-import 'package:budget_app/calander/namedcircleavatar.dart';
 import 'package:budget_app/maps/locationmodel.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import './event.dart';
 import './calanderController.dart';
 import '../utils/utils.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -16,14 +10,14 @@ import './locationform.dart';
 import '../maps/listMapevents.dart';
 
 class NewEvent extends StatelessWidget {
-  String username;
-  Image? userimage;
-  String useremail;
-  List<ProfileData>? frienddata;
-  Map<String, Image>? friendimage;
-  String location;
-  MapEvent? mapEvent;
-  List<MapEvent>? events;
+  final String username;
+  final Image? userimage;
+  final String useremail;
+  final List<ProfileData>? frienddata;
+  final Map<String, Image>? friendimage;
+  final String location;
+  final MapEvent? mapEvent;
+  final List<MapEvent>? events;
   NewEvent(
       {super.key,
       required this.username,
@@ -49,7 +43,7 @@ class NewEvent extends StatelessWidget {
             Scaffold(
           backgroundColor: Colors.black,
           appBar: AppBar(
-            backgroundColor: const Color.fromARGB(255, 201, 114, 216),
+            backgroundColor: const Color.fromARGB(255, 121, 121, 221),
             leading: CloseButton(
               color: Colors.white,
               onPressed: () {
@@ -67,14 +61,27 @@ class NewEvent extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     shadowColor: Colors.transparent,
                     elevation: 0,
-                    backgroundColor: const Color.fromARGB(255, 201, 114, 216)),
+                    backgroundColor: const Color.fromARGB(255, 121, 121, 221)),
                 onPressed: () {
                   if (!calandercontroller.public) {
                     calandercontroller.addedFriends.addAll({
                       username: userimage ?? Image.asset("assets/person.jpg")
                     });
                   }
+                  if (calandercontroller.locationdesc.text.isEmpty ||
+                      calandercontroller.fromDate
+                          .isAfter(calandercontroller.toDate) ||
+                      calandercontroller.fromDate
+                              .compareTo(calandercontroller.toDate) ==
+                          0) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            "location is missing or from date to date are wrong!")));
+
+                    return;
+                  }
                   listmapcontroller.addtolist(MapEvent(
+                      created_at: DateTime.now().toString(),
                       friendsimage:
                           calandercontroller.addedFriends.keys.toList(),
                       from: calandercontroller.fromDate.toString(),
@@ -82,8 +89,21 @@ class NewEvent extends StatelessWidget {
                       to: calandercontroller.toDate.toString(),
                       description: calandercontroller.description.text,
                       eventtitle: calandercontroller.eventname1.text));
+                  //this line was added
+                  if (events != null) {
+                    events!.add(MapEvent(
+                        created_at: DateTime.now().toString(),
+                        friendsimage:
+                            calandercontroller.addedFriends.keys.toList(),
+                        from: calandercontroller.fromDate.toString(),
+                        location: calandercontroller.locationdesc.text,
+                        to: calandercontroller.toDate.toString(),
+                        description: calandercontroller.description.text,
+                        eventtitle: calandercontroller.eventname1.text));
+                  }
                   calandercontroller.postjam(
                       MapEvent(
+                          created_at: DateTime.now().toString(),
                           friendsimage:
                               calandercontroller.addedFriends.keys.toList(),
                           from: calandercontroller.fromDate.toString(),
@@ -95,7 +115,9 @@ class NewEvent extends StatelessWidget {
                   calandercontroller.saveForm(
                       context,
                       calandercontroller.locationdesc.text,
-                      calandercontroller.addedFriends);
+                      calandercontroller.addedFriends,
+                      DateTime.now().toString(),
+                      useremail);
                 },
                 label: const Text(
                   "save",
@@ -117,12 +139,24 @@ class NewEvent extends StatelessWidget {
                   height: 20,
                 ),
                 Form(
-                  key: calandercontroller.formKey,
+                  key: calandercontroller.calanderformKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: TextFormField(
-                    validator: (value) => value != null && value.isEmpty
-                        ? "title cannot be empty"
-                        : null,
+                    validator: (value) {
+                      return (value != null && value.isEmpty)
+                          ? "title cannot be empty"
+                          : null;
+                    },
+                    onTap: () {
+                      calandercontroller.direction = TextDirection.rtl;
+                      calandercontroller.aligntext();
+                    },
+                    onChanged: (value) {
+                      calandercontroller.tortl(value);
+                      calandercontroller.aligntext();
+                    },
+                    textDirection: calandercontroller.direction,
+                    textAlign: calandercontroller.align,
                     controller: calandercontroller.eventname1,
                     style: const TextStyle(fontSize: 24, color: Colors.white),
                     decoration: const InputDecoration(
@@ -212,9 +246,9 @@ class NewEvent extends StatelessWidget {
                   inactiveBgColor: Colors.grey,
                   inactiveFgColor: Colors.white,
                   totalSwitches: 2,
-                  labels: ['Public', 'Private'],
-                  icons: [Icons.public, Icons.private_connectivity],
-                  activeBgColor: [Colors.blue, Colors.green],
+                  labels: const ['Public', 'Private'],
+                  icons: const [Icons.public, Icons.private_connectivity],
+                  activeBgColor: const [Colors.blue, Colors.green],
                   onToggle: (index) {
                     calandercontroller.changepublic(index!);
                   },
@@ -266,7 +300,7 @@ class NewEvent extends StatelessWidget {
                           )
                         ],
                       )
-                    : SizedBox(),
+                    : const SizedBox(),
                 SizedBox(
                   height: height * 0.03,
                 ),
@@ -284,10 +318,19 @@ class NewEvent extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                   height: height * 0.2,
                   child: TextFormField(
+                    onTap: () {
+                      calandercontroller.direction = TextDirection.rtl;
+                      calandercontroller.aligntext();
+                    },
+                    onChanged: (value) {
+                      calandercontroller.tortl(value);
+                      calandercontroller.aligntext();
+                    },
                     style: const TextStyle(
                       color: Colors.white,
                     ),
                     controller: calandercontroller.description,
+                    textAlign: calandercontroller.align,
                     decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: " Add a description",

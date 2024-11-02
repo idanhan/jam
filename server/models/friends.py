@@ -3,7 +3,7 @@ from db import db
 from sqlalchemy.orm import DeclarativeBase,Mapped,mapped_column,relationship
 from sqlalchemy import Column, DateTime, ForeignKey, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, String,Text,JSON,Enum
 from typing import List
-from models import jam_users
+# from models import jam_users
 import enum
 
 class friendRequest(enum.Enum):
@@ -24,3 +24,4 @@ class FriendsMod(db.Model):
     #     PrimaryKeyConstraint('friend_a_id', 'friend_b_id'),
     #     ForeignKeyConstraint([friend_a_id,friend_b_id],["users.id","users.id"]),
     # )
+    

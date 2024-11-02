@@ -1,12 +1,9 @@
 import 'dart:convert';
 
-import 'package:budget_app/friends/friendController.dart';
-import 'package:budget_app/models/User.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:budget_app/utils/usermod.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import '../ApiConstants.dart';
 
 class RequestsController extends ChangeNotifier {
@@ -28,19 +25,19 @@ class RequestsController extends ChangeNotifier {
       friends = item.map((e) {
         getImages(e['username']);
         return ProfileData(
-          name: e['username'],
-          email: e['email'],
-          password: e['password'],
-          created_at: e['created_at'],
-          country: e['country'],
-          city: e['city'],
-          instruments: List<String>.from(e['instrument']),
-          level: e['level'],
-          genres: List<String>.from(
-            e['genre'],
-          ),
-          urls: Map<String, String>.from(e['urls']),
-        );
+            name: e['username'],
+            email: e['email'],
+            password: e['password'],
+            created_at: e['created_at'],
+            country: e['country'],
+            city: e['city'],
+            instruments: List<String>.from(e['instrument']),
+            level: e['level'],
+            genres: List<String>.from(
+              e['genre'],
+            ),
+            urls: Map<String, String>.from(e['urls']),
+            location: Map<String, double>.from(e['location']));
       }).toList();
       for (int i = 0; i < friends.length; i++) {
         print(friends[i].name);
@@ -65,6 +62,7 @@ class RequestsController extends ChangeNotifier {
         }
       } else if (response.statusCode == 404) {
         print("image not found");
+        images.addAll({username: Image.asset("assets/person.jpg")});
       } else {
         print("server problem");
       }
@@ -94,7 +92,11 @@ class RequestsController extends ChangeNotifier {
   }
 
   Future<void> acceptrequest(
-      String username, String friendname, BuildContext context) async {
+      String username,
+      String friendname,
+      BuildContext context,
+      List<ProfileData>? friendslist,
+      Map<String, Image>? friendsimages) async {
     try {
       final url = Uri.parse('${constants.baseurl}/friends/put/$username');
       final response = await http.put(url,
@@ -103,11 +105,20 @@ class RequestsController extends ChangeNotifier {
             'friendname': friendname,
           }));
       if (response.statusCode == 200) {
-        print(response.body);
-        print("fuck oofff");
         addedfriends
             .add(friends.where((element) => element.name == friendname).first);
         friends.removeWhere((element) => element.name == friendname);
+        if (friendslist != null) {
+          friendslist.addAll(addedfriends);
+        } else {
+          friendslist = addedfriends;
+        }
+        await getImages(friendname);
+        if (friendsimages != null) {
+          friendsimages.addAll(images);
+        } else {
+          friendsimages = {...images};
+        }
         notifyListeners();
       }
     } catch (e) {

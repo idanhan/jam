@@ -1,10 +1,11 @@
 import datetime
 from db import db
 from sqlalchemy.orm import DeclarativeBase,Mapped,mapped_column,relationship
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String,Text,JSON
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String,Text,JSON,Index
 from typing import List
 from db import db
-from models import jam_users
+from geoalchemy2 import Geometry
+# from models import jam_users
 from models import FriendsMod
 
 
@@ -22,9 +23,13 @@ class Usermod(db.Model):
     level = Column(String(30),nullable=False)
     genre = Column(JSON,nullable=False)
     urls = Column(JSON)
-    jams = relationship('jamMod',secondary='jams_users',back_populates= 'users',lazy="dynamic")
+    # jams = relationship('jamMod',secondary='jams_users',primaryjoin=id==jam_users,back_populates= 'users',lazy="dynamic")
+    location = Column(Geometry('POINT', srid=4326), nullable=True)
     friends = relationship('Usermod',secondary='friends',primaryjoin=id==FriendsMod.friend_a_id,secondaryjoin=id==FriendsMod.friend_b_id,lazy="dynamic",backref="friend_of")
     # friends = relationship('Usermod',secondary='friends',lazy="dynamic",backref="friend_of")
+    __table_args__ = (
+        Index('users_location_idx', 'location', mysql_using='spatial'),  # Spatial index for location
+    )
     def __repr__(self) -> str:
         return f"<Username={self.username}>"#this is for printing the username of the userclass 
     

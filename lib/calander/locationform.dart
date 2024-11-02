@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class LoactionForm extends StatefulWidget {
-  TextEditingController slocation;
-  final height;
-  final width;
+  final TextEditingController slocation;
+  final double height;
+  final double width;
   GlobalKey locationkey;
   LoactionForm(
       {super.key,

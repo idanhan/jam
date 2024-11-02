@@ -1,8 +1,7 @@
+import 'package:budget_app/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
 import './messageField.dart';
 import './chatservice.dart';
 import './chat_bubbe.dart';
@@ -16,8 +15,6 @@ class Chatcontroller extends ChangeNotifier {
   void sendmessage(String receiverusername, String message, String username,
       String receiverEmail, String userEmail) async {
     if (messageController.text.isNotEmpty) {
-      print("now here");
-      print(receiverEmail);
       await chatService.sendmessage(
           receiverusername, message, username, receiverEmail, userEmail);
       notifyListeners();
@@ -54,7 +51,7 @@ class Chatcontroller extends ChangeNotifier {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error${snapshot.error}');
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
+          } else if (!snapshot.hasData) {
             return const Center(
               child: Text("waiting"),
             );
@@ -70,9 +67,6 @@ class Chatcontroller extends ChangeNotifier {
 
   Widget buildMessageItem(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
-    print("username here");
-    print(data['senderemail']);
-    print(firebaseAuth.currentUser!.uid);
 
     var alignment = (data['senderemail'] == firebaseAuth.currentUser!.email)
         ? Alignment.centerRight
@@ -86,9 +80,17 @@ class Chatcontroller extends ChangeNotifier {
       alignment: alignment,
       child: Column(
         children: [
-          Text(
-            data['senderusername'],
-            style: const TextStyle(color: Colors.black),
+          Column(
+            children: [
+              Text(
+                data['senderusername'],
+                style: const TextStyle(color: Colors.black),
+              ),
+              Text(
+                Utils.toDate((data['timestamp'] as Timestamp).toDate()),
+                style: const TextStyle(color: Colors.black),
+              )
+            ],
           ),
           ChatBubble(
             message: data['message'],

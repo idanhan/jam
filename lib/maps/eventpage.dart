@@ -1,15 +1,17 @@
+import 'package:budget_app/calander/calanderController.dart';
 import 'package:budget_app/maps/locationmodel.dart';
 import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
-import '../calander/event.dart';
+import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class EventViewScreen extends StatelessWidget {
   final MapEvent event;
-  final height;
-  final width;
+  final double height;
+  final double width;
   bool happend = false;
-  Map<String, Image>? friendimage;
-  Map<String, Image> userimage;
+  final Map<String, Image>? friendimage;
+  final Map<String, Image> userimage;
   List<Widget> listnamedavatar = [];
 
   EventViewScreen(
@@ -23,13 +25,29 @@ class EventViewScreen extends StatelessWidget {
     if (!happend) {
       happend = !happend;
       friendimage!.addAll(userimage);
+      if (event.friendsImages != null) {
+        friendimage!.addAll(event.friendsImages!);
+      }
       listnamedavatar = friendimage!.entries
           .map((e) => Container(
-                margin: const EdgeInsets.only(right: 4),
-                child: CircleAvatar(
-                  radius: height * 0.05,
-                  backgroundImage: e.value.image,
-                  child: Text(e.key),
+                margin: const EdgeInsets.only(right: 10, top: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: height * 0.05,
+                      backgroundImage: e.value.image,
+                      backgroundColor: Colors.white,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 25),
+                      child: Text(
+                        e.key,
+                        style: const TextStyle(color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
                 ),
               ))
           .toList();
@@ -40,13 +58,13 @@ class EventViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (friendimage != null && friendimage!.isNotEmpty) {
       maptolistwidget(height);
-      print("event is here");
-      print(listnamedavatar.length);
     }
+    final listavatar =
+        Provider.of<CalanderController>(context, listen: false).listnamedavatar;
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 201, 114, 216),
+        backgroundColor: const Color.fromARGB(255, 121, 121, 221),
         leading: const CloseButton(),
       ),
       body: ListView(
@@ -55,10 +73,10 @@ class EventViewScreen extends StatelessWidget {
           ListTile(
             leading: const Text(
               "From",
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-            trailing: Text(event.from,
-                style: const TextStyle(color: Colors.black, fontSize: 16)),
+            trailing: Text(Utils.toDate(DateTime.parse(event.from)),
+                style: const TextStyle(color: Colors.white, fontSize: 16)),
           ),
           SizedBox(
             height: height * 0.01,
@@ -66,10 +84,10 @@ class EventViewScreen extends StatelessWidget {
           ListTile(
             leading: const Text(
               "To:",
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-            trailing: Text(event.to,
-                style: const TextStyle(color: Colors.black, fontSize: 16)),
+            trailing: Text(Utils.toDate(DateTime.parse(event.to)),
+                style: const TextStyle(color: Colors.white, fontSize: 16)),
           ),
           SizedBox(
             height: height * 0.01,
@@ -78,10 +96,10 @@ class EventViewScreen extends StatelessWidget {
             child: ListTile(
               leading: const Text(
                 "Title:",
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               trailing: Text(event.eventtitle,
-                  style: const TextStyle(color: Colors.black, fontSize: 26)),
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
             ),
           ),
           SizedBox(
@@ -95,7 +113,7 @@ class EventViewScreen extends StatelessWidget {
               const Text(
                 "Location:",
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold),
               ),
@@ -103,23 +121,27 @@ class EventViewScreen extends StatelessWidget {
                 width: width * 0.01,
               ),
               Text(event.location,
-                  style: const TextStyle(color: Colors.black, fontSize: 16)),
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
             ],
           ),
           SizedBox(
             height: height * 0.01,
           ),
-          ListTile(
-            leading: const Text(
-              "Description:",
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
-            trailing: Text(event.description,
-                style: const TextStyle(color: Colors.black, fontSize: 16)),
+          Wrap(
+            children: [
+              const ListTile(
+                leading: Text(
+                  "Description:",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+              Text(event.description,
+                  style: const TextStyle(color: Colors.white, fontSize: 16))
+            ],
           ),
           friendimage != null
               ? SizedBox(
-                  height: height * 0.3,
+                  height: height * 0.2,
                   width: width * 0.9,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,

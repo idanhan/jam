@@ -1,16 +1,17 @@
 import 'package:budget_app/signin/SigninController.dart';
-import 'package:budget_app/signup/signupController.dart';
 import 'package:flutter/material.dart';
 
 class SignInForm extends StatelessWidget {
   final SignInController controller;
+  final focus = FocusNode();
   final width;
+  static final signinformkey = GlobalKey<FormState>();
   SignInForm({required this.controller, required this.width});
 
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: controller.formkey,
+        key: signinformkey,
         child: Column(
           children: [
             Container(
@@ -22,7 +23,7 @@ class SignInForm extends StatelessWidget {
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 248, 216, 248),
-                  hintText: 'UserName',
+                  hintText: 'name',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                 ),
@@ -34,6 +35,7 @@ class SignInForm extends StatelessWidget {
             Container(
               width: width * 0.9,
               child: TextFormField(
+                focusNode: focus,
                 textAlign: TextAlign.center,
                 controller: controller.emailnameController,
                 keyboardType: TextInputType.emailAddress,
@@ -65,7 +67,6 @@ class SignInForm extends StatelessWidget {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      print("here it is");
                       return 'Please enter a valid password.';
                     }
                     if (value.length < 5) {

@@ -14,10 +14,26 @@ class Services with ChangeNotifier {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final item = json.decode(response.body);
+        print(item);
+        print("is in");
         user = ProfileData.fromJson(item);
+      } else {
+        print(response.body);
       }
     } catch (e) {
       print('error occured22 $e');
+      user = ProfileData(
+          name: "",
+          email: email,
+          password: "",
+          created_at: "",
+          country: "",
+          city: "",
+          instruments: [],
+          level: "",
+          genres: [],
+          urls: {},
+          location: {});
     }
     return user;
   }

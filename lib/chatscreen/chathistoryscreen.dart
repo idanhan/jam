@@ -1,8 +1,4 @@
-import 'package:budget_app/chatscreen/chatcontroller.dart';
-import 'package:budget_app/chatscreen/chathistorycontroller.dart';
-import 'package:budget_app/chatscreen/messagemodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import './chatservice.dart';
 
@@ -122,7 +118,7 @@ class ChatHistoryScreen extends StatelessWidget {
                 ),
               );
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),

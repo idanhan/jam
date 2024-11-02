@@ -1,24 +1,22 @@
 import 'package:budget_app/friends/friendController.dart';
 import 'package:budget_app/friends/friendForm.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import '../requests/requestsController.dart';
 
 class FriendsScreen extends StatelessWidget {
-  FriendsScreen(
+  const FriendsScreen(
       {super.key,
       required this.username,
       this.friendsimages,
       this.friendslist,
       required this.userEmail});
   final String username;
-  List<ProfileData>? friendslist;
-  Map<String, Image>? friendsimages;
-  String userEmail;
-  bool searched = false;
+  final List<ProfileData>? friendslist;
+  final Map<String, Image>? friendsimages;
+  final String userEmail;
+  final bool searched = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,32 +31,6 @@ class FriendsScreen extends StatelessWidget {
         body: SafeArea(
           child: Consumer2<FriendController, RequestsController>(
               builder: (context, friendcontroller, requestcontroller, child) {
-            if (friendslist != null && friendslist!.isNotEmpty) {
-              friendcontroller.orderlist(friendslist!);
-            }
-            if (friendslist != null &&
-                requestcontroller.addedfriends.isNotEmpty) {
-              friendslist!.addAll(requestcontroller.addedfriends);
-              if (friendsimages != null) {
-                friendsimages!.addAll(requestcontroller.images);
-              } else {
-                friendsimages = {};
-                friendsimages!.addAll(requestcontroller.images);
-              }
-              requestcontroller.addedfriends.clear();
-              print(friendslist!.length);
-            } else if (friendslist == null &&
-                requestcontroller.addedfriends.isNotEmpty) {
-              friendslist = [];
-              friendslist!.addAll(requestcontroller.addedfriends);
-              if (friendsimages != null) {
-                friendsimages!.addAll(requestcontroller.images);
-              } else {
-                friendsimages = {};
-                friendsimages!.addAll(requestcontroller.images);
-              }
-              requestcontroller.addedfriends.clear();
-            }
             return SingleChildScrollView(
               child: Column(children: [
                 SizedBox(
@@ -75,8 +47,10 @@ class FriendsScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      await friendcontroller
-                          .getUsers(friendcontroller.friendsSearch.text);
+                      // await friendcontroller.getUsers(
+                      //     friendcontroller.friendsSearch.text, context);
+                      await friendcontroller.getsearchedfriend(username,
+                          friendcontroller.friendsSearch.text, context);
                       friendcontroller.searched = true;
                     },
                     child: Container(
@@ -109,7 +83,7 @@ class FriendsScreen extends StatelessWidget {
                 ),
                 SizedBox(
                   height: height * 0.62,
-                  child: friendcontroller.searched
+                  child: (friendcontroller.friend != null)
                       ? SizedBox(
                           height: height * 0.12,
                           child: ListView(children: [
@@ -117,8 +91,13 @@ class FriendsScreen extends StatelessWidget {
                               height: height * 0.1,
                               child: GestureDetector(
                                 onTap: () {
-                                  final image = friendcontroller.image ??
+                                  final image = friendcontroller.mapfriends[
+                                          friendcontroller
+                                              .friendsSearch.text] ??
                                       Image.asset("assets/person.jpg");
+                                  // friendcontroller.image
+                                  // ??
+                                  //     Image.asset("assets/person.jpg");
                                   friendcontroller.gotofriendpage(
                                       context,
                                       image,
@@ -135,19 +114,24 @@ class FriendsScreen extends StatelessWidget {
                                       leading: FittedBox(
                                         fit: BoxFit.cover,
                                         child: CircleAvatar(
-                                          child: Image(
-                                            image: friendcontroller.image !=
-                                                    null
-                                                ? friendcontroller.image!.image
-                                                : Image.asset(
-                                                        "assets/person.jpg")
-                                                    .image,
-                                          ),
+                                          backgroundImage: friendcontroller
+                                                          .mapfriends[
+                                                      friendcontroller
+                                                          .friendsSearch
+                                                          .text] !=
+                                                  null
+                                              ? friendcontroller
+                                                  .mapfriends[friendcontroller
+                                                      .friendsSearch.text]!
+                                                  .image
+                                              : Image.asset("assets/person.jpg")
+                                                  .image,
                                         ),
                                       ),
                                       title:
                                           Text(friendcontroller.friend!.name),
-                                      trailing: !friendcontroller.addedfriend
+                                      trailing: friendcontroller
+                                              .friendstatus.isEmpty
                                           ? ElevatedButton(
                                               onPressed: () {
                                                 friendcontroller.addFriend(
@@ -158,7 +142,7 @@ class FriendsScreen extends StatelessWidget {
                                               child: const Text("Add Friend"),
                                             )
                                           : Text(
-                                              "Added to friends",
+                                              friendcontroller.friendstatus,
                                               style: TextStyle(
                                                   fontSize: height * 0.015),
                                             ),
@@ -224,7 +208,41 @@ class FriendsScreen extends StatelessWidget {
                                             title:
                                                 Text(friendslist![index].name),
                                             trailing: ElevatedButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder:
+                                                          (context) =>
+                                                              AlertDialog(
+                                                                content: Text(
+                                                                    "Do you like to remove ${friendslist![index].name} from your friends list?"),
+                                                                actions: [
+                                                                  TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        print(
+                                                                            userEmail);
+                                                                        print(friendslist![index]
+                                                                            .email);
+                                                                        friendcontroller.deletefriend(
+                                                                            userEmail,
+                                                                            friendslist![index].email);
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child: const Text(
+                                                                          "Delete")),
+                                                                  TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child: const Text(
+                                                                          "Cancel"))
+                                                                ],
+                                                              ));
+                                                },
                                                 child: const Text("Remove")),
                                           ),
                                         ),

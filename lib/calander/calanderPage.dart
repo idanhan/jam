@@ -5,14 +5,9 @@ import 'package:budget_app/calander/event_data_source.dart';
 import 'package:budget_app/calander/taskWidget.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import './drawer/drawer.dart';
-import './calandermeetings.dart';
-import '../profilepage/profileScreen.dart';
 import '../maps/locationmodel.dart';
 
 class CalanderPage extends StatelessWidget {
@@ -24,16 +19,17 @@ class CalanderPage extends StatelessWidget {
   Map<String, Image>? friendsimage;
   List<MapEvent>? mapEvents;
   List<Event>? eventslist;
-  CalanderPage(
-      {super.key,
-      this.current,
-      required this.email,
-      required this.username,
-      this.friendsdata,
-      this.friendsimage,
-      this.mapEvents,
-      this.eventslist,
-      this.userimage});
+  CalanderPage({
+    super.key,
+    this.current,
+    required this.email,
+    required this.username,
+    this.friendsdata,
+    this.friendsimage,
+    this.mapEvents,
+    this.eventslist,
+    this.userimage,
+  });
 
   CalendarView viewCalendar = CalendarView.week;
 
@@ -67,7 +63,11 @@ class CalanderPage extends StatelessWidget {
                           Provider.of<EventProvider>(context, listen: false);
                       provider.setDate(calendarLongPressDetails.date!);
                       showModalBottomSheet(
-                          context: context, builder: (context) => TaskWidget());
+                          context: context,
+                          builder: (context) => TaskWidget(
+                                username: username,
+                                useremail: email,
+                              ));
                     },
                     view: viewCalendar,
                     dataSource: EventDataSource(events),
@@ -90,7 +90,8 @@ class CalanderPage extends StatelessWidget {
                               friendsimage,
                               username,
                               userimage,
-                              email);
+                              email,
+                              mapEvents);
                         },
                         child: const Icon(
                           Icons.add,

@@ -67,6 +67,9 @@ flutter {
     source '../..'
 }
 
-dependencies {
-    
+configurations.all {
+    resolutionStrategy {
+        force 'com.github.yalantis:ucrop:2.2.9'
+    }
 }
+

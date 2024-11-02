@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField 
 import enum
+import pointschema
 
 class friendRequest(enum.Enum):
     PENDING = "pending",
@@ -19,6 +20,7 @@ class plainUserSchema(Schema):
     level = fields.Str(required=True)
     genre = fields.List(fields.Str(),required=True)
     urls = fields.Dict(keys=fields.Str(), values=fields.Str())
+    location = pointschema.PointField()
 
 
 class PlainJamSchema(Schema):

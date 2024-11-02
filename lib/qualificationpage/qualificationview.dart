@@ -1,10 +1,8 @@
 import 'package:budget_app/qualificationpage/dropdownbuttons/cityChange.dart';
-import 'package:budget_app/qualificationpage/dropdownbuttons/insDropItem.dart';
 import 'package:budget_app/qualificationpage/dropdownbuttons/levelChange.dart';
 import 'package:budget_app/qualificationpage/dropdownbuttons/musicalInstruList.dart';
 import 'package:budget_app/qualificationpage/genreDrop.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import './dropdownbuttons/instrumentdropdown.dart';
 import './dropdownbuttons/musicinstrudropdown.dart';
@@ -233,9 +231,7 @@ class qualificationView extends StatelessWidget {
                       final String level = context.read<ChangeLevel>().current;
                       final List<String> genres =
                           context.read<GenresList>().getGenreList;
-                      controller.signup(context, email, password);
-                      print("here country");
-                      print(country);
+
                       await controller.register(
                           username,
                           email,

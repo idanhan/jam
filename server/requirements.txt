@@ -9,3 +9,5 @@ pymysql
 marshmallow
 marshmallow_enum
 gunicorn
+GeoAlchemy2==0.15.2
+Shapely

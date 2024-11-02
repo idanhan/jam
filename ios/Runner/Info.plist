@@ -33,6 +33,10 @@
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<string>NSLocationWhenInUseUsageDescription</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location is needed to show relevant data.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Your location is needed to show relevant data.</string>
 	<key>To display and track location</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

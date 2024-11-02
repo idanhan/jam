@@ -1,9 +1,6 @@
 import 'package:budget_app/mainscreen/pages/taskrequests.dart';
 import 'package:budget_app/mainscreen/pages/todaystasks.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
-import './mainscreencontroller.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});

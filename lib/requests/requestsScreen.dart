@@ -1,13 +1,17 @@
+import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:budget_app/requests/requestsController.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import '../friends/friendController.dart';
 
 class RequestsScreen extends StatelessWidget {
-  String username;
-  RequestsScreen({required this.username});
+  final String username;
+  final List<ProfileData>? friendslist;
+  final Map<String, Image>? friendsmap;
+  const RequestsScreen(
+      {super.key,
+      required this.username,
+      required this.friendslist,
+      required this.friendsmap});
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -71,7 +75,9 @@ class RequestsScreen extends StatelessWidget {
                                           await controller.acceptrequest(
                                               username,
                                               snapshot.data![index].name,
-                                              context);
+                                              context,
+                                              friendslist,
+                                              friendsmap);
                                         },
                                         child: const Text("Add Friend"))
                                   ]),

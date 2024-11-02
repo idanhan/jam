@@ -2,8 +2,8 @@ import 'package:budget_app/calander/EventProvider.dart';
 import 'package:budget_app/chatscreen/chatservice.dart';
 import 'package:budget_app/friendPage/friendpageController.dart';
 import 'package:budget_app/friends/friendController.dart';
+import 'package:budget_app/landingpage/landingviewmodel.dart';
 import 'package:budget_app/maps/listMapevents.dart';
-import 'package:budget_app/page/pageview.dart';
 import 'package:budget_app/page/pageviewcontroller.dart';
 import 'package:budget_app/profilepage/profileController.dart';
 import 'package:budget_app/profilepage/screenController.dart';
@@ -15,6 +15,8 @@ import 'package:budget_app/qualificationpage/genreDrop.dart';
 import 'package:budget_app/requests/requestsController.dart';
 import 'package:budget_app/signin/SigninController.dart';
 import 'package:budget_app/signup/signupController.dart';
+import 'package:budget_app/splashscreen/splashcontroller.dart';
+import 'package:budget_app/splashscreen/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './qualificationpage/qualificationController.dart';
@@ -30,27 +32,98 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => Pageviewcontroller()),
-        ChangeNotifierProvider(create: (context) => SignupController()),
-        ChangeNotifierProvider(create: (context) => SignInController()),
-        ChangeNotifierProvider(create: (context) => qualificationController()),
-        ChangeNotifierProvider(create: (context) => CalanderController()),
-        ChangeNotifierProvider(create: (context) => EventProvider()),
-        ChangeNotifierProvider(create: (context) => MusicalInstrument()),
-        ChangeNotifierProvider(create: (context) => GenresList()),
-        ChangeNotifierProvider(create: (context) => ChangeLevel()),
-        ChangeNotifierProvider(create: (context) => StateCityChange()),
-        ChangeNotifierProvider(create: (context) => ProfileController()),
-        ChangeNotifierProvider(create: (context) => screenController()),
-        ChangeNotifierProvider(create: (context) => Services()),
-        ChangeNotifierProvider(create: (context) => FriendController()),
-        ChangeNotifierProvider(create: (context) => RequestsController()),
-        ChangeNotifierProvider(create: (context) => friendPagecontroller()),
-        ChangeNotifierProvider(create: (context) => ListMapEvents()),
-        ChangeNotifierProvider(create: (context) => AuthServices()),
-        ChangeNotifierProvider(create: (context) => Chatcontroller()),
-        ChangeNotifierProvider(create: (context) => ChatHistoryController()),
-        ChangeNotifierProvider(create: (context) => ChatService())
+        ChangeNotifierProvider(
+          create: (context) => Pageviewcontroller(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SignupController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SignInController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => qualificationController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CalanderController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => EventProvider(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => MusicalInstrument(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => GenresList(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChangeLevel(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => StateCityChange(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => screenController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Services(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FriendController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => RequestsController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => friendPagecontroller(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ListMapEvents(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthServices(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Chatcontroller(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChatHistoryController(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChatService(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Splashcontoller(),
+          lazy: true,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LandingViewModel(),
+          lazy: true,
+        )
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -64,7 +137,7 @@ class Myapp extends StatelessWidget {
               color: Color.fromARGB(255, 182, 218, 226),
               clipBehavior: Clip.antiAliasWithSaveLayer),
         ),
-        home: const Pageview(),
+        home: SplashScreen(),
       ),
     );
   }

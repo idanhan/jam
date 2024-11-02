@@ -1,7 +1,5 @@
 import 'package:budget_app/signin/SigninController.dart';
 import 'package:budget_app/signin/SigninForm.dart';
-import 'package:budget_app/signup/signupController.dart';
-import 'package:budget_app/signup/signupForm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,21 +11,21 @@ class SignInScreen extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Container(
-        height: height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Color.fromARGB(255, 0, 0, 0), Colors.grey],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter),
-        ),
-        child: Consumer<SignInController>(
-          builder: (context, controller, widget) {
-            return GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-              },
-              child: SingleChildScrollView(
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          height: height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Color.fromARGB(255, 0, 0, 0), Colors.grey],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter),
+          ),
+          child: Consumer<SignInController>(
+            builder: (context, controller, widget) {
+              return SingleChildScrollView(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                   child: Column(
@@ -65,11 +63,6 @@ class SignInScreen extends StatelessWidget {
                               controller.emailnameController.text,
                               controller.passwordController.text,
                               controller.UsernameController.text);
-                          // await controller.getImage();
-                          // await controller.getListFriends(
-                          //     controller.UsernameController.text); //added this
-                          // await controller.getcomingevents(
-                          //     controller.UsernameController.text);
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 84, 120, 187),
@@ -106,9 +99,9 @@ class SignInScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

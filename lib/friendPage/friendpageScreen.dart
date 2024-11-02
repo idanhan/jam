@@ -2,14 +2,13 @@ import 'package:budget_app/friendPage/friendpageController.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../chatscreen/chatservice.dart';
 
 class FriendProfilePage extends StatelessWidget {
-  String userEmail;
-  String currentusername;
-  Image friendImage;
-  ProfileData frienddata;
-  FriendProfilePage(
+  final String userEmail;
+  final String currentusername;
+  final Image friendImage;
+  final ProfileData frienddata;
+  const FriendProfilePage(
       {super.key,
       required this.userEmail,
       required this.friendImage,
@@ -20,6 +19,7 @@ class FriendProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final globalkey = GlobalKey();
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
@@ -30,7 +30,7 @@ class FriendProfilePage extends StatelessWidget {
             builder: (context, controller, child) {
           controller.initialvidoes(
               frienddata.urls, height, frienddata.name, width);
-          return Container(
+          return SizedBox(
             height: height,
             child: Column(
               children: [

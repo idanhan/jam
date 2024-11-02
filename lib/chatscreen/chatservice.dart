@@ -1,4 +1,3 @@
-import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +7,7 @@ import 'package:budget_app/chatscreen/chatscreen.dart';
 class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  TextDirection direction = TextDirection.ltr;
   List<Message> messagelist = [];
   Map<String, Message> messagemap = {};
 
@@ -28,9 +28,6 @@ class ChatService extends ChangeNotifier {
     List<String> usernames = [userEmail, receiverEmail];
     usernames.sort();
     String chatroomId = usernames.join("_");
-    print("message is");
-    print(receiverEmail);
-    print(userEmail);
 
     await _firebaseFirestore.collection('chat_rooms').doc(chatroomId).set({
       'nameparts': usernames,
@@ -56,30 +53,12 @@ class ChatService extends ChangeNotifier {
         .snapshots();
   }
 
-  // Stream<List<String>> getUserChatRooms(String userId) {
-  //   // return FirebaseFirestore.instance
-  //   //     .collection('chat_rooms')
-  //   //     .where('', arrayContains: userId)
-  //   //     .snapshots()
-  //   //     .map((snapshot) => snapshot.docs.map((doc) => doc.id).toList());
-  //   return  _firebaseFirestore.collection('chat_rooms')
-  //       .doc(chatRoomId)
-  //       .
-
-  // }
-
   Stream<List<dynamic>> getUserChatRooms(String userId) {
-    // final docslist =
-    //     _firebaseFirestore.collection('chat_rooms').get().then((value) => );
-    print("now here");
     var f = FirebaseFirestore.instance
         .collection('chat_rooms')
         .where('nameparts', arrayContains: userId)
         .snapshots()
-        .map((event) {
-      print("events here");
-      print(event.docs.first['nameparts']);
-    });
+        .map((event) {});
     print(f.first);
 
     Stream<List<dynamic>> list1 = FirebaseFirestore.instance
@@ -177,5 +156,22 @@ class ChatService extends ChangeNotifier {
       }
     }
     return false;
+  }
+
+  bool _isrtl(String text) {
+    if (text.isEmpty) return false;
+
+    final rtlChars = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF]');
+    return rtlChars.hasMatch(text.characters.first);
+  }
+
+  void tortl(String text) {
+    if (_isrtl(text)) {
+      direction = TextDirection.rtl;
+      notifyListeners();
+    } else {
+      direction = TextDirection.ltr;
+      notifyListeners();
+    }
   }
 }

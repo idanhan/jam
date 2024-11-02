@@ -11,7 +11,13 @@ import '../maps/locationmodel.dart';
 
 class TaskWidget extends StatelessWidget {
   List<MapEvent>? mapEvents;
-  TaskWidget({super.key, this.mapEvents});
+  String username;
+  String useremail;
+  TaskWidget(
+      {super.key,
+      this.mapEvents,
+      required this.username,
+      required this.useremail});
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +51,10 @@ class TaskWidget extends StatelessWidget {
           onTap: (details) {
             if (details.appointments == null) return;
             final event = details.appointments!.first as Event;
-            print("task widget");
-            print(event.friendimage);
             Navigator.of(context).push(MaterialPageRoute(
               builder: ((context) => EventViewPage(
+                    useremail: useremail,
+                    username: username,
                     width: width,
                     height: height,
                     event: event,

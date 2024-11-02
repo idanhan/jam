@@ -2,7 +2,6 @@ import 'package:budget_app/calander/EventProvider.dart';
 import 'package:budget_app/calander/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter/foundation.dart';
@@ -17,18 +16,20 @@ import 'package:intl/intl.dart';
 import './eventpage.dart';
 
 class MapScreen extends StatefulWidget {
-  List<MapEvent>? mapevents;
-  Map<String, Image>? friendsimage;
-  Map<String, Image> userimage;
-  double height;
-  double width;
-  MapScreen(
+  final List<MapEvent>? mapevents;
+  final Map<String, Image>? friendsimage;
+  final Map<String, Image> userimage;
+  final double height;
+  final double width;
+  final Event? events;
+  const MapScreen(
       {super.key,
       this.mapevents,
       this.friendsimage,
       required this.height,
       required this.width,
-      required this.userimage});
+      required this.userimage,
+      this.events});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -63,25 +64,9 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
-    _mapController?.dispose();
+    // _mapController?.dispose();
     super.dispose();
   }
-
-  // void turnmapeventtoevent(List<MapEvent> listmapevents) {
-  //    Map<String,Image> selectedfriendimage = {};
-  //   if(widget.friendsimage!=null && widget.friendsimage!.isNotEmpty){
-  //     selectedfriendimage.addEntries(widget.friendsimage!.entries.where((element) => element.key.compareTo(other) == 0));
-  //   }
-  //   listevents = listmapevents
-  //       .map((e) => Event(
-  //           location: e.location,
-  //           from: DateTime.parse(e.from),
-  //           to: DateTime.parse(e.to),
-  //           title: e.eventtitle,
-  //           description: e.description,
-  //           friendimage:  ))
-  //       .toList();
-  // }
 
   Future<void> getuserpos() async {
     try {
@@ -121,11 +106,6 @@ class _MapScreenState extends State<MapScreen> {
     final Uint8List markerIcon =
         await getBytesFromAsset('assets/band.png', 100);
     customMarkerIcon = BitmapDescriptor.fromBytes(markerIcon);
-    // if (widget.mapevents != null) {
-    //   for (var element in widget.mapevents!) {
-    //     setmarkers(element.location, element.from, element.to, element,widget.height,widget.width);
-    //   }
-    // }
   }
 
   Map<String, Image> getfriend(
@@ -133,6 +113,8 @@ class _MapScreenState extends State<MapScreen> {
     Map<String, Image> friend = {};
     if (friendslist != null && friendslist.isNotEmpty) {
       friendslist.forEach((liste) {
+        print("map image");
+        print(liste);
         if (mapfriends != null &&
             mapfriends.isNotEmpty &&
             mapfriends.containsKey(liste)) {
@@ -145,8 +127,15 @@ class _MapScreenState extends State<MapScreen> {
     return friend;
   }
 
-  Future<void> setmarkers(String address, String from, String to,
-      MapEvent mapEvent, double height, double width) async {
+  Future<void> setmarkers(
+      String address,
+      String from,
+      String to,
+      MapEvent mapEvent,
+      double height,
+      double width,
+      BuildContext context,
+      Map<String, Image>? friendsimage) async {
     if (widget.mapevents != null &&
         widget.mapevents!.isNotEmpty &&
         address.isNotEmpty) {
@@ -156,7 +145,6 @@ class _MapScreenState extends State<MapScreen> {
         LatLng position =
             LatLng(location.first.latitude, location.first.longitude);
         setState(() {
-          if (dateloc != null && dateloc!.isNotEmpty) {}
           markers.add(
             Marker(
               markerId: MarkerId(address),
@@ -213,7 +201,8 @@ class _MapScreenState extends State<MapScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     var firstday = days.first;
-    final events = Provider.of<EventProvider>(context).evetns;
+    final events = Provider.of<EventProvider>(context, listen: false).evetns;
+
     return Scaffold(
       body: _initialposition == null
           ? Center(child: CircularProgressIndicator())
@@ -224,23 +213,25 @@ class _MapScreenState extends State<MapScreen> {
                   zoom: 14,
                 ),
                 onMapCreated: (GoogleMapController controller) async {
-                  print("created");
                   final Uint8List markerIcon =
                       await getBytesFromAsset('assets/band.png', 200);
                   if (widget.mapevents != null) {
                     widget.mapevents!.addAll(events.map((e) {
                       if (e.friendimage != null) {
                         return MapEvent(
+                            created_at: e.created_at,
                             from: e.from.toString(),
                             location: e.location,
                             to: e.to.toString(),
                             description: e.description,
                             eventtitle: e.title,
+                            friendsImages: e.friendimage,
                             friendsimage: e.friendimage!.entries
                                 .map((e) => e.toString())
                                 .toList());
                       } else {
                         return MapEvent(
+                          created_at: e.created_at,
                           from: e.from.toString(),
                           location: e.location,
                           to: e.to.toString(),
@@ -249,9 +240,10 @@ class _MapScreenState extends State<MapScreen> {
                         );
                       }
                     }));
+                    Map<String, Image> f = {};
                     widget.mapevents!.forEach((element) {
                       setmarkers(element.location, element.from, element.to,
-                          element, height, width);
+                          element, height, width, context, f);
                     });
                   }
                   setState(() {
@@ -268,24 +260,6 @@ class _MapScreenState extends State<MapScreen> {
                             (element.to.day == dateval.day))))
                     .map((e) => e.marker)
                     .toSet(),
-
-                // onLongPress: (argument) {
-                //   final MapEvent mapevent2 = markerdate
-                //       .where((element) => ((element.marker.position.latitude ==
-                //               argument.latitude) &&
-                //           (element.marker.position.longitude ==
-                //               argument.longitude)))
-                //       .first
-                //       .event;
-                //   Map<String, Image> friendimage = {};
-                //   if (widget.friendsimage != null &&
-                //       widget.friendsimage!.isNotEmpty) {
-                //         friendimage.addEntries(widget.friendsimage!.entries.where((element) => ));
-                //       }
-                //   Navigator.of(context).push(MaterialPageRoute(
-                //       builder: (context) => EventViewScreen(
-                //           event: mapevent2, height: height, width: width)));
-                // },
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
                 zoomControlsEnabled: true,
@@ -315,7 +289,6 @@ class _MapScreenState extends State<MapScreen> {
                                   dateFormat.format(DateTime.parse(value)))))
                           .toList(),
                       onChanged: (val) {
-                        print(val);
                         setState(() {
                           day = val!;
                           dateval = DateTime.parse(val);

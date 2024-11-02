@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 import './event.dart';
 
 class EventProvider extends ChangeNotifier {
@@ -27,9 +26,11 @@ class EventProvider extends ChangeNotifier {
   void editEvent(Event oldEvent, Event newEvent, BuildContext context) {
     final index = _events.indexOf(oldEvent);
     _events[index] = newEvent;
-    print("lets");
-    print(newEvent.title);
     notifyListeners();
     Navigator.of(context).popUntil(ModalRoute.withName('/CalanderPage'));
+  }
+
+  void removeallevents() {
+    _events.clear();
   }
 }

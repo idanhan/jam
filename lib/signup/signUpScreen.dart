@@ -1,5 +1,6 @@
 import 'package:budget_app/signup/signupController.dart';
 import 'package:budget_app/signup/signupForm.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,8 +58,13 @@ class SignUpScreen extends StatelessWidget {
                         height: height * 0.07,
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          controller.gotoQualificationpage(context);
+                        onPressed: () async {
+                          try {
+                            controller.gotoQualificationpage(context);
+                          } on FirebaseAuthException catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.message.toString())));
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 84, 120, 187),
@@ -86,7 +92,7 @@ class SignUpScreen extends StatelessWidget {
                               onPressed: () {
                                 controller.gotoSignInScreen(context);
                               },
-                              child: Text(
+                              child: const Text(
                                 'here',
                                 style: TextStyle(color: Colors.purple),
                               ))

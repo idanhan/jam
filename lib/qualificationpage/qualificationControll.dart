@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:budget_app/utils/signupmixin.dart';
-import 'package:flutter/material.dart';
 import '../ApiConstants.dart';
 import 'package:http/http.dart' as http;
 

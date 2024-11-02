@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import '../chatscreen/chatservice.dart';
 
 class ChatHistoryController extends ChangeNotifier {
@@ -8,8 +7,6 @@ class ChatHistoryController extends ChangeNotifier {
   final chatservice = ChatService();
 
   Widget getLatestChats(String UserEmail, double height) {
-    print("username");
-    print(UserEmail);
     chatservice.getHistory(UserEmail);
     return StreamBuilder(
         stream: chatservice.getUserChatRooms(UserEmail),

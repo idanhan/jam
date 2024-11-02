@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class FriendSearchForm extends StatefulWidget {
-  TextEditingController friendcontroller;
-  double width;
-  FriendSearchForm(
+  final TextEditingController friendcontroller;
+  final double width;
+  const FriendSearchForm(
       {super.key, required this.friendcontroller, required this.width});
 
   @override

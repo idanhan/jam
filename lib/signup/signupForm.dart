@@ -10,7 +10,7 @@ class SignupForm extends StatelessWidget with Usersignupmixin {
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: controller.formkey,
+        key: controller.signupformkey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           children: [
@@ -23,13 +23,12 @@ class SignupForm extends StatelessWidget with Usersignupmixin {
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Color.fromARGB(255, 248, 216, 248),
-                    hintText: 'UserName',
+                    hintText: 'name',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20))),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      print("here it is");
                       return 'Please enter a valid username.';
                     }
                     return null; // means input is correct
@@ -47,7 +46,7 @@ class SignupForm extends StatelessWidget with Usersignupmixin {
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Color.fromARGB(255, 248, 216, 248),
-                    hintText: 'Email',
+                    hintText: 'email',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20))),
                   ),
@@ -79,7 +78,6 @@ class SignupForm extends StatelessWidget with Usersignupmixin {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      print("here it is");
                       return 'Please enter a valid password.';
                     }
                     if (value.length < 5) {

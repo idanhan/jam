@@ -2,13 +2,10 @@ import 'package:budget_app/chatscreen/chatscreen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:budget_app/profilepage/ProfileData.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 import '../ApiConstants.dart';
 import '../youtubeplayer.dart';
-
-import '../chatscreen/chatservice.dart';
 
 class friendPagecontroller extends ChangeNotifier {
   late ProfileData data;
@@ -19,7 +16,7 @@ class friendPagecontroller extends ChangeNotifier {
   Future<void> getImage(String username) async {
     try {
       final url = Uri.parse('${constants.baseurl}/user/image/$username');
-      final response = await http.get(url).timeout(const Duration(seconds: 2));
+      final response = await http.get(url);
       if (response.statusCode == 200) {
         if (response.bodyBytes.isNotEmpty) {
           image = Image.memory(response.bodyBytes);
@@ -42,12 +39,13 @@ class friendPagecontroller extends ChangeNotifier {
     if (initialized) {
       listwid = map.entries
           .map((e) => Container(
-                height: height * 0.3,
+                key: UniqueKey(),
+                height: height * 0.33,
                 child: Column(
                   children: [
                     Text(
                       e.key,
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 15),
                     ),
                     SizedBox(
                       height: height * 0.01,

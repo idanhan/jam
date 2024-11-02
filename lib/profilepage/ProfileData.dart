@@ -9,24 +9,22 @@ class ProfileData {
   String level;
   List<String> genres;
   Map<String, String> urls;
+  Map<String, double> location;
 
-  ProfileData({
-    required this.name,
-    required this.email,
-    required this.password,
-    required this.created_at,
-    required this.country,
-    required this.city,
-    required this.instruments,
-    required this.level,
-    required this.genres,
-    required this.urls,
-  });
+  ProfileData(
+      {required this.name,
+      required this.email,
+      required this.password,
+      required this.created_at,
+      required this.country,
+      required this.city,
+      required this.instruments,
+      required this.level,
+      required this.genres,
+      required this.urls,
+      required this.location});
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
-    if (json['genre'] is List<dynamic>) {
-      print('true');
-    }
     return ProfileData(
       name: json['username'],
       email: json['email'],
@@ -39,6 +37,8 @@ class ProfileData {
       genres: (json['genre'] as List).cast<String>(),
       urls: (json['urls'] as Map<String, dynamic>)
           .map((key, value) => MapEntry(key, '$value')),
+      location: (json['location'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, value as double)),
     );
   }
 }

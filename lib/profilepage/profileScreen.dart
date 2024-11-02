@@ -1,14 +1,11 @@
 import 'dart:io';
-import 'dart:ui';
 
+import 'package:budget_app/page/pageview.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:budget_app/profilepage/desform.dart';
 import 'package:budget_app/profilepage/videosform.dart';
 import 'package:budget_app/qualificationpage/authservices.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import './profileController.dart';
 
@@ -30,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final provider = Provider.of<AuthServices>(context);
+    final provider = Provider.of<AuthServices>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -39,10 +36,12 @@ class ProfileScreen extends StatelessWidget {
           const Text("log-out"),
           IconButton(
               onPressed: () async {
-                await provider.signout();
+                await provider.signout(context);
                 // await Navigator.of(context).pushReplacement(
                 //     MaterialPageRoute(builder: (context) => SignInScreen()));
-                Navigator.pop(context); //needs to clear everything after logout
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) =>
+                        Pageview())); //needs to clear everything after logout
               },
               icon: const Icon(
                 Icons.logout,
@@ -58,9 +57,8 @@ class ProfileScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Consumer<ProfileController>(
               builder: (context, controller, child) {
-            print("null or not");
-            print(image == null);
-            controller.initialvidoes(userData.urls, height, width);
+            controller.initialvidoes(
+                context, userData.urls, height, width, username);
             return Container(
               height: height,
               child: Column(
@@ -211,7 +209,8 @@ class ProfileScreen extends StatelessWidget {
                             controller.Desccontroller.text,
                             username,
                             height,
-                            width);
+                            width,
+                            context);
                       },
                       child: const Text("add youtube video")),
                   const Divider(),
@@ -220,12 +219,45 @@ class ProfileScreen extends StatelessWidget {
                     height: height * 0.4,
                     child: ListView.builder(
                       itemBuilder: (context, index) {
-                        print(controller.listwid.length);
                         return controller.listwid[index];
                       },
                       itemCount: controller.listwid.length,
                     ),
-                  )
+                  ),
+                  Expanded(
+                      child: Align(
+                    alignment: FractionalOffset.bottomCenter,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child: const Text(
+                        "Delete user",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  content: const Text(
+                                      "do you like to delete your account?"),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          controller.deleteuser(
+                                              email, context, username);
+                                        },
+                                        child: const Text("delete user")),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text("cancel"))
+                                  ],
+                                ));
+                      },
+                    ),
+                  )),
                 ],
               ),
             );

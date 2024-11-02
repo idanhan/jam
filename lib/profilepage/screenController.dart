@@ -28,6 +28,7 @@ class screenController with ChangeNotifier {
     if (first && events.isNotEmpty) {
       List<MapEvent> secmapevents = events
           .map((e) => MapEvent(
+              created_at: e.created_at,
               friendsimage: e.friendimage!.keys.toList(),
               from: e.from.toString(),
               location: e.location,

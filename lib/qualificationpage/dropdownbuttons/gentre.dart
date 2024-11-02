@@ -22,8 +22,6 @@ class genreDrop extends StatelessWidget {
             .toList(),
         value: name,
         onChanged: (String? val) {
-          print("fdsfds");
-          print(val);
           if (val != null) {
             list.addItem(val);
           }

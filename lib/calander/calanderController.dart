@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:budget_app/calander/event.dart';
+import 'package:budget_app/calander/eventediting.dart';
 import 'package:budget_app/maps/locationmodel.dart';
 import 'package:budget_app/profilepage/ProfileData.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +17,7 @@ import './namedcircleavatar.dart';
 import './locationform.dart';
 import '../ApiConstants.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 
 class CalanderController extends ChangeNotifier {
   TextEditingController eventname1 = TextEditingController();
@@ -22,11 +25,13 @@ class CalanderController extends ChangeNotifier {
   TextEditingController descriptionEdit = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController locationdesc = TextEditingController();
+  TextAlign align = TextAlign.left;
+  TextDirection direction = TextDirection.ltr;
   late DateTime toDate;
   late TimeOfDay toTime;
   late DateTime fromDate;
   late TimeOfDay fromTime;
-  final formKey = GlobalKey<FormState>();
+  final calanderformKey = GlobalKey<FormState>();
   final formKeyEdit = GlobalKey<FormState>();
   final locationformkey = GlobalKey<LoactionFormState>();
   bool public = true;
@@ -41,7 +46,6 @@ class CalanderController extends ChangeNotifier {
   List<MapEvent>? eventsformap;
   List<MapEvent>? mapeventsload;
   bool first = false;
-
   CalanderController(
       {DateTime? toDate,
       this.eventsformap,
@@ -71,11 +75,12 @@ class CalanderController extends ChangeNotifier {
       Map<String, Image>? friendimage,
       String username,
       Image? userimage,
-      String useremail) async {
+      String useremail,
+      List<MapEvent>? mapevents) async {
     await Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => NewEvent(
               useremail: useremail,
-              events: eventsformap,
+              events: mapevents,
               location: locationdesc.text,
               frienddata: frienddata,
               friendimage: friendimage,
@@ -89,21 +94,23 @@ class CalanderController extends ChangeNotifier {
     if ((friendsimage != null) &&
         (friendsimage.containsKey(name)) &&
         (!addedFriends.containsKey(name))) {
-      addedFriends.addAll(friendsimage);
+      addedFriends.addAll(
+          {name: friendsimage[name] ?? Image.asset("assets/person.jpg")});
       listnamedavatar.add(Namedavatar(
           name: name,
           image: friendsimage[name] ?? Image.asset("assets/person.jpg")));
       notifyListeners();
-    } else if (frienddata != null &&
-        frienddata.isNotEmpty &&
-        !addedFriends.containsKey(name)) {
-      if (frienddata.where((element) => element.name == name).isNotEmpty) {
-        addedFriends.addAll({name: Image.asset("assets/person.jpg")});
-        listnamedavatar.add(
-            Namedavatar(name: name, image: Image.asset("assets/person.jpg")));
-        notifyListeners();
-      }
     }
+    // } else if (frienddata != null &&
+    //     frienddata.isNotEmpty &&
+    //     !addedFriends.containsKey(name)) {
+    //   if (frienddata.where((element) => element.name == name).isNotEmpty) {
+    //     addedFriends.addAll({name: Image.asset("assets/person.jpg")});
+    //     listnamedavatar.add(
+    //         Namedavatar(name: name, image: Image.asset("assets/person.jpg")));
+    //     notifyListeners();
+    //   }
+    // }
   }
 
   void removeFriend(int index) {
@@ -111,6 +118,23 @@ class CalanderController extends ChangeNotifier {
         .removeWhere((key, value) => key == listnamedavatar[index].name);
     listnamedavatar.removeAt(index);
     notifyListeners();
+  }
+
+  void tortl(String text) {
+    if (_isrtl(text)) {
+      direction = TextDirection.rtl;
+      notifyListeners();
+    } else {
+      direction = TextDirection.ltr;
+      notifyListeners();
+    }
+  }
+
+  bool _isrtl(String text) {
+    if (text.isEmpty) return false;
+
+    final rtlChars = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF]');
+    return rtlChars.hasMatch(text.characters.first);
   }
 
   Future<void> addfriendtojam(
@@ -123,10 +147,12 @@ class CalanderController extends ChangeNotifier {
     }
   }
 
-  Future<void> getallevents(
-      context, List<MapEvent> mapevents, Map<String, Image> friendsmap) async {
+  Future<void> getallevents(context, List<MapEvent> mapevents,
+      Map<String, Image> friendsmap, String usercreated) async {
     List<Event> eventslist = mapevents
         .map((e) => Event(
+            user_created: usercreated,
+            created_at: e.created_at,
             friendimage: friendsmap,
             location: e.location,
             from: DateTime.parse(e.from),
@@ -139,10 +165,21 @@ class CalanderController extends ChangeNotifier {
     });
   }
 
+  void aligntext() {
+    if (direction == TextDirection.rtl) {
+      align = TextAlign.right;
+      notifyListeners();
+    } else {
+      align = TextAlign.left;
+      notifyListeners();
+    }
+  }
+
   void getallevents2(List<Event> events, List<MapEvent>? mapevents) {
     if (first && events.isNotEmpty) {
       List<MapEvent> secmapevents = events
           .map((e) => MapEvent(
+              created_at: e.created_at.toString(),
               friendsimage: e.friendimage!.keys.toList(),
               from: e.from.toString(),
               location: e.location,
@@ -180,10 +217,7 @@ class CalanderController extends ChangeNotifier {
         }
         fromDate = DateTime(
             date.year, date.month, date.day, fromDate.hour, fromDate.minute);
-        print(fromDate);
-        print(toDate);
         if (fromDate.isAfter(toDate)) {
-          print("here please");
           toDate = fromDate;
         }
         notifyListeners();
@@ -212,7 +246,6 @@ class CalanderController extends ChangeNotifier {
             time.hour, time.minute);
 
         if (fromDate.isAfter(toDate)) {
-          print("here please");
           toDate = fromDate;
         }
         notifyListeners();
@@ -264,7 +297,6 @@ class CalanderController extends ChangeNotifier {
             time.hour, time.minute);
 
         if (fromEdit.isAfter(toEdit)) {
-          print("here please");
           toEdit = fromEdit;
         }
         notifyListeners();
@@ -311,10 +343,11 @@ class CalanderController extends ChangeNotifier {
     Navigator.popUntil(context, ModalRoute.withName('/CalanderPage'));
   }
 
-  void saveForm(
-      BuildContext context, String location, Map<String, Image> friendimage) {
+  void saveForm(BuildContext context, String location,
+      Map<String, Image> friendimage, String created_at, String usercreated) {
     if (eventsformap != null) {
       eventsformap!.add(MapEvent(
+          created_at: created_at,
           location: location,
           from: fromDate.toString(),
           to: toDate.toString(),
@@ -323,12 +356,14 @@ class CalanderController extends ChangeNotifier {
           friendsimage: friendimage.entries.map((e) => e.key).toList()));
     }
     final event = Event(
+        user_created: usercreated,
         location: location,
         friendimage: friendimage,
         from: fromDate,
         to: toDate,
         title: eventname1.text,
-        description: description.text);
+        description: description.text,
+        created_at: DateTime.now().toIso8601String());
     eventname1.clear();
     description.clear();
     fromDate = DateTime.now();
@@ -344,6 +379,8 @@ class CalanderController extends ChangeNotifier {
     if (eventlist != null && eventlist.isNotEmpty) {
       eventlist.forEach((element) {
         provider.addEvent(Event(
+            user_created: element.user_created,
+            created_at: element.created_at,
             location: element.location,
             from: element.from,
             to: element.to,
@@ -413,6 +450,25 @@ class CalanderController extends ChangeNotifier {
     provider.editEvent(oldevent, newevent, context);
   }
 
+  // Future<void> putjam(
+  //     MapEvent mapEvent, String useremail, String created_at) async {
+  //   final url = Uri.parse("${constants.baseurl}/changejams");
+  //   final response = http.put(url,
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode({
+  //         "jamTitle": mapEvent.eventtitle,
+  //         "jamDescription": mapEvent.description,
+  //         "jamStartTime": mapEvent.from.toString(),
+  //         "jamEndTime": mapEvent.to.toString(),
+  //         "locationdes": mapEvent.location,
+  //         "public": public,
+  //         "friends": mapEvent.friendsimage,
+  //         "user_created": useremail,
+  //         "created_at": created_at,
+  //       }));
+  //   notifyListeners();
+  // }
+
   Widget buildDropDownField(
       {required String text, required VoidCallback function}) {
     return Expanded(
@@ -456,5 +512,188 @@ class CalanderController extends ChangeNotifier {
         ],
       ),
     ]);
+  }
+
+  //added from here
+  List<Widget> deleteActions(
+      BuildContext context, String useremail, Event event) {
+    return [
+      TextButton(
+          onPressed: () {
+            context.read<CalanderController>().delete(event, context);
+            deletejam(useremail, event.created_at);
+          },
+          child: Text("Delete Event")),
+      TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Cancel"))
+    ];
+  }
+
+  Future<void> deletejam(String useremail, String created_at) async {
+    final url = Uri.parse("${constants.baseurl}/deletejam");
+    final response = await http.delete(url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          "user_created": useremail,
+          "created_at": created_at,
+        }));
+  }
+
+  List<Widget> buildViewingActions(
+      BuildContext context, Event event, String username, String useremail) {
+    return [
+      IconButton(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => EventEditingpage(
+                      username: username,
+                      event: event,
+                      emailname: useremail,
+                    )));
+          },
+          icon: const Icon(
+            Icons.edit,
+            color: Colors.white,
+          )),
+      IconButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Row(children: [
+                  Icon(Icons.delete),
+                  SizedBox(
+                    width: 0.05,
+                  ),
+                  Text("Delete Event?")
+                ]),
+                actions: deleteActions(context, useremail, event),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.white,
+          ))
+    ];
+  }
+
+  Future<void> removefriendfromjam(String username, String usercreated,
+      String createdat, Event event) async {
+    final url = Uri.parse(
+        "${constants.baseurl}/deleteuserfromjam/$username,$usercreated,$createdat");
+    final response = await http.delete(
+      url,
+    );
+    if (response.statusCode == 200) {
+      if (event.friendimage != null) {
+        event.friendimage!.removeWhere((key, value) => key == username);
+        print("user removed");
+        notifyListeners();
+      } else {
+        print(response.body);
+      }
+    }
+  }
+
+  void maptolistwidget(
+      double height,
+      BuildContext context,
+      bool happend,
+      Event event,
+      String username,
+      List<Widget> listnamedavatar2,
+      String useremail) {
+    if (!happend) {
+      print("im in");
+      happend = !happend;
+      listnamedavatar2.addAll(event.friendimage!.entries
+          .map((e) => (username != e.key || event.user_created == useremail)
+              ? Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 4),
+                      child: CircleAvatar(
+                        radius: height * 0.05,
+                        backgroundImage: e.value.image,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0),
+                      child: Text(
+                        e.key,
+                        style: const TextStyle(color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
+                )
+              : Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 4),
+                      child: Stack(children: [
+                        CircleAvatar(
+                          radius: height * 0.05,
+                          backgroundImage: e.value.image,
+                        ),
+                        Positioned(
+                            left: 2,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.remove_circle,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: const Text(
+                                              "remove yourself from this jam?"),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: () {
+                                                  removefriendfromjam(
+                                                      username,
+                                                      event.user_created,
+                                                      event.created_at,
+                                                      event);
+                                                  notifyListeners();
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text("Yes")),
+                                            TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text("No"))
+                                          ],
+                                        ));
+                              },
+                            ))
+                      ]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0),
+                      child: Text(
+                        e.key,
+                        style: const TextStyle(color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
+                ))
+          .toList());
+
+      if (listnamedavatar2.isNotEmpty) {
+        print(listnamedavatar2.length);
+        notifyListeners();
+      }
+    }
   }
 }
